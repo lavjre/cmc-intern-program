@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"mini-asm/internal/database"
 	"mini-asm/internal/handler"
 	"mini-asm/internal/service"
 	"mini-asm/internal/storage/postgres"
@@ -42,18 +42,11 @@ func main() {
 	// ============================================
 
 	// Open database connection
-	db, err := sql.Open("postgres", connStr)
+	db, err := database.ConnectWithRetry(connStr, 5)
 	if err != nil {
-		log.Fatal("❌ Failed to open database:", err)
+		log.Fatal("❌ Failed to connect to database:", err)
 	}
 	defer db.Close()
-
-	// Verify connection with ping
-	if err := db.Ping(); err != nil {
-		log.Fatal("❌ Failed to ping database:", err)
-	}
-
-	log.Println("✅ Database connected successfully")
 
 	// Optional: Configure connection pool
 	db.SetMaxOpenConns(25)               // Maximum open connections
