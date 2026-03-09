@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"mini-asm/internal/database"
 	"mini-asm/internal/handler"
@@ -23,12 +24,11 @@ func main() {
 
 	// Database configuration
 	dbHost := getEnv("DB_HOST", "localhost")
-	dbPort := getEnv("DB_PORT", "5432")
-	dbUser := getEnv("DB_USER", "secops")
-	dbPassword := getEnv("DB_PASSWORD", "secops123")
+	dbPort := getEnv("DB_PORT", "55432")
+	dbUser := getEnv("DB_USER", "postgres")
+	dbPassword := getEnv("DB_PASSWORD", "postgres")
 	dbName := getEnv("DB_NAME", "mini_asm")
 	dbSSLMode := getEnv("DB_SSLMODE", "disable")
-
 	// Build connection string
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
@@ -51,7 +51,7 @@ func main() {
 	// Optional: Configure connection pool
 	db.SetMaxOpenConns(25)               // Maximum open connections
 	db.SetMaxIdleConns(5)                // Maximum idle connections
-	db.SetConnMaxLifetime(5 * 60 * 1000) // Connection lifetime (5 minutes)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	// ============================================
 	// DEPENDENCY INJECTION - Wire up all layers
@@ -73,7 +73,7 @@ func main() {
 	// 3. Initialize Handler Layer (Presentation / HTTP)
 	//    ✨ NO CHANGES! Handler doesn't care about storage implementation
 	assetHandler := handler.NewAssetHandler(assetService)
-	healthHandler := handler.NewHealthHandler()
+	healthHandler := handler.NewHealthHandler(db)
 	log.Println("✅ Handlers initialized")
 
 	// ============================================

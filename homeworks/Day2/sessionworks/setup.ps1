@@ -23,7 +23,7 @@ function Show-Help {
 function Start-Database {
     Write-Host "🚀 Starting PostgreSQL..." -ForegroundColor Cyan
     docker-compose up -d
-    Write-Host "✅ PostgreSQL started on localhost:5432" -ForegroundColor Green
+    Write-Host "✅ PostgreSQL started on localhost:55432" -ForegroundColor Green
 }
 
 function Stop-Database {

@@ -15,7 +15,7 @@ func ConnectWithRetry(dsn string, maxRetries int) (*sql.DB, error) {
 		return nil, err
 	}
 
-	for attempt := 0; attempt <= maxRetries; attempt++ {
+	for attempt := 1; attempt <= maxRetries; attempt++ {
 		log.Printf("🔄 Database connection attempt %d/%d...", attempt, maxRetries)
 
 		if err = db.Ping(); err == nil {
@@ -24,12 +24,13 @@ func ConnectWithRetry(dsn string, maxRetries int) (*sql.DB, error) {
 		}
 
 		if attempt < maxRetries {
-			sleepSec := 1 << uint(attempt)
+			sleepSec := 1 << uint(attempt-1)
 			log.Printf("⚠️  Connection failed: %v. Retrying in %ds...", err, sleepSec)
 			time.Sleep(time.Duration(sleepSec) * time.Second)
 		}
 	}
 
+	_ = db.Close()
 	return nil, fmt.Errorf("failed to connect to database after %d attempts: %w", maxRetries, err)
 }
 

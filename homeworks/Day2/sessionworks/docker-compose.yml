@@ -22,7 +22,7 @@ services:
 
     # Port mapping: host:container
     ports:
-      - "5432:5432"
+      - "55432:5432"
 
     # Persistent volume for data
     volumes:
