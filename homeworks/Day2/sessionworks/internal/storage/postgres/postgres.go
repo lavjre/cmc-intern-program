@@ -306,10 +306,6 @@ func (p *PostgresStorage) GetStats() (*model.AssetStats, error) {
 		stats.Total += c
 	}
 
-	if err := rowsType.Err(); err != nil {
-		return nil, err
-	}
-
 	rowsStatus, err := p.db.Query(`SELECT status, COUNT(*) FROM assets GROUP BY status`)
 	if err != nil {
 		return nil, err
@@ -324,11 +320,6 @@ func (p *PostgresStorage) GetStats() (*model.AssetStats, error) {
 		}
 		stats.Bystatus[s] = c
 	}
-
-	if err := rowsStatus.Err(); err != nil {
-		return nil, err
-	}
-
 	return stats, nil
 }
 
