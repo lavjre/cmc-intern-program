@@ -7,6 +7,7 @@ import (
 	"mini-asm/internal/config"
 	"mini-asm/internal/model"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
@@ -376,6 +377,22 @@ func (p *PostgresStorage) BatchCreate(assets []*model.Asset) ([]string, error) {
 		return nil, err
 	}
 	return createdIDs, nil
+}
+
+// bai 3
+func (p *PostgresStorage) BatchDelete(ids []string) (int, error) {
+	query := `DELETE FROM assets WHERE id = ANY($1)`
+	result, err := p.db.Exec(query, pq.Array(ids))
+	if err != nil {
+		return 0, err
+	}
+
+	deleted, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(deleted), nil
 }
 
 /*

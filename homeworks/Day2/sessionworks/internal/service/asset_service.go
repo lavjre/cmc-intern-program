@@ -186,6 +186,14 @@ func (s *AssetService) BatchCreateAssets(reqAssets []BatchCreateInput) ([]string
 	return s.storage.BatchCreate(assets)
 }
 
+// bai 3
+func (s *AssetService) BatchDeleteAssets(ids []string) (int, error) {
+	if len(ids) == 0 {
+		return 0, model.ErrInvalidInput
+	}
+	return s.storage.BatchDelete(ids)
+}
+
 /*
 🎓 NOTES:
 

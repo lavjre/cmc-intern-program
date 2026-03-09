@@ -6,6 +6,7 @@ import (
 	"mini-asm/internal/model"
 	"mini-asm/internal/service"
 	"net/http"
+	"strings"
 )
 
 // AssetHandler handles HTTP requests for asset operations
@@ -258,6 +259,29 @@ func (h *AssetHandler) BatchCreate(w http.ResponseWriter, r *http.Request) {
 	RespondJSON(w, http.StatusCreated, map[string]interface{}{
 		"created": len(ids),
 		"ids":     ids,
+	})
+}
+
+// bai 3
+func (h *AssetHandler) BatchDelete(w http.ResponseWriter, r *http.Request) {
+	idsParam := r.URL.Query().Get("ids")
+	if idsParam == "" {
+		RespondError(w, http.StatusBadRequest, "ids parameter required")
+		return
+	}
+
+	ids := strings.Split(idsParam, ",")
+
+	deletedCount, err := h.service.BatchDeleteAssets(ids)
+	if err != nil {
+		statusCode := mapErrorToStatus(err)
+		RespondError(w, statusCode, err.Error())
+		return
+	}
+
+	RespondJSON(w, http.StatusOK, map[string]int{
+		"deleted":   deletedCount,
+		"not_found": len(ids) - deletedCount,
 	})
 }
 

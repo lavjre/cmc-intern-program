@@ -103,6 +103,8 @@ func main() {
 	mux.HandleFunc("GET /assets/stats", assetHandler.GetStats)    // Get asset statistics
 	//bai 2
 	mux.HandleFunc("POST /assets/batch", assetHandler.BatchCreate) // Batch create assets
+	//bai 3
+	mux.HandleFunc("DELETE /assets/batch", assetHandler.BatchDelete) // Batch delete assets
 
 	log.Println("✅ Routes registered:")
 	log.Println("   GET    /health")
