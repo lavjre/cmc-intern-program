@@ -344,6 +344,40 @@ func (p *PostgresStorage) CountAssets(typeFilter, statusFilter string) (int, err
 	return count, err
 }
 
+// bai 2
+func (p *PostgresStorage) BatchCreate(assets []*model.Asset) ([]string, error) {
+	tx, err := p.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	query := `
+		INSERT INTO assets (id, name, type, status, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+	`
+	var createdIDs []string
+	for _, asset := range assets {
+		_, err := tx.Exec(
+			query,
+			asset.ID,
+			asset.Name,
+			asset.Type,
+			asset.Status,
+			asset.CreatedAt,
+			asset.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		createdIDs = append(createdIDs, asset.ID)
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return createdIDs, nil
+}
+
 /*
 🎓 TEACHING NOTES:
 

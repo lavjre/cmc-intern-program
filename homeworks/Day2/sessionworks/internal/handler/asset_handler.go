@@ -228,6 +228,39 @@ func (h *AssetHandler) CountAssets(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+// bai 2
+type BatchCreateRequest struct {
+	Assets []struct {
+		Name string `json:"name"`
+		Type string `json:"type"`
+	} `json:"assets"`
+}
+
+func (h *AssetHandler) BatchCreate(w http.ResponseWriter, r *http.Request) {
+	var req BatchCreateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		RespondError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	inputs := make([]service.BatchCreateInput, 0, len(req.Assets))
+	for _, a := range req.Assets {
+		inputs = append(inputs, service.BatchCreateInput{Name: a.Name, Type: a.Type})
+	}
+
+	ids, err := h.service.BatchCreateAssets(inputs)
+	if err != nil {
+		statusCode := mapErrorToStatus(err)
+		RespondError(w, statusCode, err.Error())
+		return
+	}
+
+	RespondJSON(w, http.StatusCreated, map[string]interface{}{
+		"created": len(ids),
+		"ids":     ids,
+	})
+}
+
 /*
 🎓 NOTES:
 

@@ -39,6 +39,8 @@ type Storage interface {
 	//bai 1
 	GetStats() (*model.AssetStats, error)
 	CountAssets(typeFilter, statusFilter string) (int, error)
+	//bai 2
+	BatchCreate(assets []*model.Asset) ([]string, error)
 }
 
 /*

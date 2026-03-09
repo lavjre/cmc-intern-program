@@ -151,6 +151,41 @@ func (s *AssetService) CountAssets(typeFilter, statusFilter string) (int, error)
 	return s.storage.CountAssets(typeFilter, statusFilter)
 }
 
+// bai 2
+type BatchCreateInput struct {
+	Name string
+	Type string
+}
+
+func (s *AssetService) BatchCreateAssets(reqAssets []BatchCreateInput) ([]string, error) {
+	if len(reqAssets) == 0 || len(reqAssets) > 100 {
+		return nil, model.ErrInvalidInput
+	}
+
+	var assets []*model.Asset
+	now := time.Now()
+
+	for _, reqA := range reqAssets {
+		if reqA.Name == "" {
+			return nil, model.ErrEmptyName
+		}
+		if !model.IsValidType(reqA.Type) {
+			return nil, model.ErrInvalidType
+		}
+
+		assets = append(assets, &model.Asset{
+			ID:        uuid.New().String(),
+			Name:      reqA.Name,
+			Type:      reqA.Type,
+			Status:    model.StatusActive,
+			CreatedAt: now,
+			UpdatedAt: now,
+		})
+	}
+
+	return s.storage.BatchCreate(assets)
+}
+
 /*
 🎓 NOTES:
 

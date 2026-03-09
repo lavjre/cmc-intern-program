@@ -98,8 +98,11 @@ func main() {
 	mux.HandleFunc("GET /assets/{id}", assetHandler.GetAsset)       // Read (single)
 	mux.HandleFunc("PUT /assets/{id}", assetHandler.UpdateAsset)    // Update
 	mux.HandleFunc("DELETE /assets/{id}", assetHandler.DeleteAsset) // Delete
-	mux.HandleFunc("GET /assets/count", assetHandler.CountAssets)   // Count assets with filters
-	mux.HandleFunc("GET /assets/stats", assetHandler.GetStats)      // Get asset statistics
+	//bai 1
+	mux.HandleFunc("GET /assets/count", assetHandler.CountAssets) // Count assets with filters
+	mux.HandleFunc("GET /assets/stats", assetHandler.GetStats)    // Get asset statistics
+	//bai 2
+	mux.HandleFunc("POST /assets/batch", assetHandler.BatchCreate) // Batch create assets
 
 	log.Println("✅ Routes registered:")
 	log.Println("   GET    /health")
