@@ -233,6 +233,14 @@ func (s *AssetService) GetAssetsPaginated(page, limit int, typeF, statusF string
 	}, nil
 }
 
+// bai 7
+func (s *AssetService) SearchByName(q string) ([]*model.Asset, error) {
+	if q == "" {
+		return nil, model.ErrInvalidInput
+	}
+	return s.storage.SearchAssets(q)
+}
+
 /*
 🎓 NOTES:
 

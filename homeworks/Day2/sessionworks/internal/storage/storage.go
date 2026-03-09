@@ -45,6 +45,8 @@ type Storage interface {
 	BatchDelete(ids []string) (int, error)
 	//bai 6
 	GetAllWithFilters(page, limit int, typeFilter, statusFilter string) ([]*model.Asset, int, error)
+	//bai 7
+	SearchAssets(q string) ([]*model.Asset, error)
 }
 
 /*

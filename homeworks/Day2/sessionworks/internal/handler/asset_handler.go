@@ -303,6 +303,24 @@ func (h *AssetHandler) ListAssets(w http.ResponseWriter, r *http.Request) {
 	RespondJSON(w, http.StatusOK, res)
 }
 
+// bai 7
+func (h *AssetHandler) Search(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+	if q == "" {
+		RespondError(w, http.StatusBadRequest, "q query parameter required")
+		return
+	}
+
+	assets, err := h.service.SearchByName(q)
+	if err != nil {
+		statusCode := mapErrorToStatus(err)
+		RespondError(w, statusCode, err.Error())
+		return
+	}
+
+	RespondJSON(w, http.StatusOK, assets)
+}
+
 /*
 🎓 NOTES:
 

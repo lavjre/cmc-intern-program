@@ -444,6 +444,33 @@ func (p *PostgresStorage) GetAllWithFilters(page, limit int, typeF, statusF stri
 	return assets, total, nil
 }
 
+// bai 7
+func (p *PostgresStorage) SearchAssets(q string) ([]*model.Asset, error) {
+	query := `
+		SELECT id, name, type, status, created_at, updated_at
+		FROM assets
+		WHERE name ILIKE $1
+		ORDER BY created_at DESC
+		LIMIT 100
+	`
+
+	rows, err := p.db.Query(query, "%"+q+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var assets []*model.Asset
+	for rows.Next() {
+		asset := &model.Asset{}
+		if err := rows.Scan(&asset.ID, &asset.Name, &asset.Type, &asset.Status, &asset.CreatedAt, &asset.UpdatedAt); err != nil {
+			return nil, err
+		}
+		assets = append(assets, asset)
+	}
+	return assets, nil
+}
+
 /*
 🎓 TEACHING NOTES:
 

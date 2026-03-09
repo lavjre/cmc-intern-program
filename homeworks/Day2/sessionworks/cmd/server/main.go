@@ -49,8 +49,8 @@ func main() {
 	defer db.Close()
 
 	// Optional: Configure connection pool
-	db.SetMaxOpenConns(25)               // Maximum open connections
-	db.SetMaxIdleConns(5)                // Maximum idle connections
+	db.SetMaxOpenConns(25) // Maximum open connections
+	db.SetMaxIdleConns(5)  // Maximum idle connections
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	// ============================================
@@ -98,6 +98,8 @@ func main() {
 	mux.HandleFunc("POST /assets/batch", assetHandler.BatchCreate) // Batch create assets
 	//bai 3
 	mux.HandleFunc("DELETE /assets/batch", assetHandler.BatchDelete) // Batch delete assets
+	//bai 7
+	mux.HandleFunc("GET /assets/search", assetHandler.Search) // Search assets by name
 
 	log.Println("✅ Routes registered:")
 	log.Println("   GET    /health")
