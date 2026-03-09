@@ -6,6 +6,7 @@ import (
 	"mini-asm/internal/model"
 	"mini-asm/internal/service"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -59,40 +60,40 @@ func (h *AssetHandler) CreateAsset(w http.ResponseWriter, r *http.Request) {
 }
 
 // ListAssets handles GET /assets
-func (h *AssetHandler) ListAssets(w http.ResponseWriter, r *http.Request) {
-	// Get query parameters for filtering/searching
-	assetType := r.URL.Query().Get("type")
-	status := r.URL.Query().Get("status")
-	search := r.URL.Query().Get("search")
+// func (h *AssetHandler) ListAssets(w http.ResponseWriter, r *http.Request) {
+// 	// Get query parameters for filtering/searching
+// 	assetType := r.URL.Query().Get("type")
+// 	status := r.URL.Query().Get("status")
+// 	search := r.URL.Query().Get("search")
 
-	var assets []*model.Asset
-	var err error
+// 	var assets []*model.Asset
+// 	var err error
 
-	// Determine which operation to perform
-	if search != "" {
-		// Search by name
-		assets, err = h.service.SearchAssets(search)
-	} else if assetType != "" || status != "" {
-		// Filter by type and/or status
-		assets, err = h.service.FilterAssets(assetType, status)
-	} else {
-		// Get all assets
-		assets, err = h.service.GetAllAssets()
-	}
+// 	// Determine which operation to perform
+// 	if search != "" {
+// 		// Search by name
+// 		assets, err = h.service.SearchAssets(search)
+// 	} else if assetType != "" || status != "" {
+// 		// Filter by type and/or status
+// 		assets, err = h.service.FilterAssets(assetType, status)
+// 	} else {
+// 		// Get all assets
+// 		assets, err = h.service.GetAllAssets()
+// 	}
 
-	if err != nil {
-		statusCode := mapErrorToStatus(err)
-		RespondError(w, statusCode, err.Error())
-		return
-	}
+// 	if err != nil {
+// 		statusCode := mapErrorToStatus(err)
+// 		RespondError(w, statusCode, err.Error())
+// 		return
+// 	}
 
-	// Return empty array instead of null if no assets
-	if assets == nil {
-		assets = []*model.Asset{}
-	}
+// 	// Return empty array instead of null if no assets
+// 	if assets == nil {
+// 		assets = []*model.Asset{}
+// 	}
 
-	RespondJSON(w, http.StatusOK, assets)
-}
+// 	RespondJSON(w, http.StatusOK, assets)
+// }
 
 // GetAsset handles GET /assets/{id}
 func (h *AssetHandler) GetAsset(w http.ResponseWriter, r *http.Request) {
@@ -283,6 +284,23 @@ func (h *AssetHandler) BatchDelete(w http.ResponseWriter, r *http.Request) {
 		"deleted":   deletedCount,
 		"not_found": len(ids) - deletedCount,
 	})
+}
+
+// bai 6
+func (h *AssetHandler) ListAssets(w http.ResponseWriter, r *http.Request) {
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	typeFilter := r.URL.Query().Get("type")
+	statusFilter := r.URL.Query().Get("status")
+
+	res, err := h.service.GetAssetsPaginated(page, limit, typeFilter, statusFilter)
+	if err != nil {
+		statusCode := mapErrorToStatus(err)
+		RespondError(w, statusCode, err.Error())
+		return
+	}
+
+	RespondJSON(w, http.StatusOK, res)
 }
 
 /*

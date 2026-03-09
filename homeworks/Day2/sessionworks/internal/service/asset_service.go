@@ -194,6 +194,45 @@ func (s *AssetService) BatchDeleteAssets(ids []string) (int, error) {
 	return s.storage.BatchDelete(ids)
 }
 
+// bai 6
+func (s *AssetService) GetAssetsPaginated(page, limit int, typeF, statusF string) (*model.PaginatedResponse, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 20
+	}
+	if limit > 100 {
+		limit = 100
+	}
+	if typeF != "" && !model.IsValidType(typeF) {
+		return nil, model.ErrInvalidType
+	}
+	if statusF != "" && !model.IsValidStatus(statusF) {
+		return nil, model.ErrInvalidStatus
+	}
+
+	assets, total, err := s.storage.GetAllWithFilters(page, limit, typeF, statusF)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPages := 0
+	if total > 0 {
+		totalPages = (total + limit - 1) / limit
+	}
+
+	return &model.PaginatedResponse{
+		Data: assets,
+		Pagination: model.Pagination{
+			Page:       page,
+			Limit:      limit,
+			Total:      total,
+			TotalPages: totalPages,
+		},
+	}, nil
+}
+
 /*
 🎓 NOTES:
 

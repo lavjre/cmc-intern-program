@@ -395,6 +395,55 @@ func (p *PostgresStorage) BatchDelete(ids []string) (int, error) {
 	return int(deleted), nil
 }
 
+// bai 6
+func (p *PostgresStorage) GetAllWithFilters(page, limit int, typeF, statusF string) ([]*model.Asset, int, error) {
+	offset := (page - 1) * limit
+	baseWhere := ` WHERE 1=1`
+	args := []interface{}{}
+	argIndex := 1
+
+	if typeF != "" {
+		baseWhere += fmt.Sprintf(" AND type = $%d", argIndex)
+		args = append(args, typeF)
+		argIndex++
+	}
+	if statusF != "" {
+		baseWhere += fmt.Sprintf(" AND status = $%d", argIndex)
+		args = append(args, statusF)
+		argIndex++
+	}
+
+	countQuery := `SELECT COUNT(*) FROM assets` + baseWhere
+	var total int
+	if err := p.db.QueryRow(countQuery, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	dataQuery := `
+		SELECT id, name, type, status, created_at, updated_at
+		FROM assets` + baseWhere + fmt.Sprintf(`
+		ORDER BY created_at DESC
+		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+
+	dataArgs := append(args, limit, offset)
+	rows, err := p.db.Query(dataQuery, dataArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var assets []*model.Asset
+	for rows.Next() {
+		asset := &model.Asset{}
+		if err := rows.Scan(&asset.ID, &asset.Name, &asset.Type, &asset.Status, &asset.CreatedAt, &asset.UpdatedAt); err != nil {
+			return nil, 0, err
+		}
+		assets = append(assets, asset)
+	}
+
+	return assets, total, nil
+}
+
 /*
 🎓 TEACHING NOTES:
 

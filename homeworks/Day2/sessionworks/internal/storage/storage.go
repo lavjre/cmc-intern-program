@@ -43,6 +43,8 @@ type Storage interface {
 	BatchCreate(assets []*model.Asset) ([]string, error)
 	//bai 3
 	BatchDelete(ids []string) (int, error)
+	//bai 6
+	GetAllWithFilters(page, limit int, typeFilter, statusFilter string) ([]*model.Asset, int, error)
 }
 
 /*
