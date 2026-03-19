@@ -871,16 +871,248 @@ func (p *PostgresStorage) GetWHOISRecordsByScan(scanJobID string) ([]*model.WHOI
 	return records, nil
 }
 
+// bai1
+// ip
+func (p *PostgresStorage) CreateIPScanResult(result *model.IPScanResult) error {
+	query := `INSERT INTO ip_scan_results (id, asset_id, scan_job_id, ip_address, geo_json, asn_json, reverse_dns, created_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := p.db.Exec(query,
+		result.ID, result.AssetID, result.ScanJobID,
+		result.IPAddress, result.GeoJSON, result.ASNJSON,
+		result.ReverseDNS, result.CreatedAt)
+	return err
+}
+
+func (p *PostgresStorage) GetIPScanResultsByAsset(assetID string) ([]*model.IPScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, ip_address, geo_json, asn_json, reverse_dns, created_at
+              FROM ip_scan_results WHERE asset_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, assetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.IPScanResult
+	for rows.Next() {
+		r := &model.IPScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.IPAddress, &r.GeoJSON, &r.ASNJSON,
+			&r.ReverseDNS, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+func (p *PostgresStorage) GetIPScanResultsByScan(scanJobID string) ([]*model.IPScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, ip_address, geo_json, asn_json, reverse_dns, created_at
+              FROM ip_scan_results WHERE scan_job_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, scanJobID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.IPScanResult
+	for rows.Next() {
+		r := &model.IPScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.IPAddress, &r.GeoJSON, &r.ASNJSON,
+			&r.ReverseDNS, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+// port
+func (p *PostgresStorage) CreatePortScanResult(result *model.PortScanResult) error {
+	query := `INSERT INTO port_scan_results (id, asset_id, scan_job_id, ip_address, open_ports_json, closed_ports, total_scanned, scan_duration_ms, created_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	_, err := p.db.Exec(query,
+		result.ID, result.AssetID, result.ScanJobID,
+		result.IPAddress, result.OpenPortsJSON,
+		result.ClosedPorts, result.TotalScanned,
+		result.ScanDuration, result.CreatedAt)
+	return err
+}
+
+func (p *PostgresStorage) GetPortScanResultsByAsset(assetID string) ([]*model.PortScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, ip_address, open_ports_json, closed_ports, total_scanned, scan_duration_ms, created_at
+              FROM port_scan_results WHERE asset_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, assetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.PortScanResult
+	for rows.Next() {
+		r := &model.PortScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.IPAddress, &r.OpenPortsJSON,
+			&r.ClosedPorts, &r.TotalScanned,
+			&r.ScanDuration, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+func (p *PostgresStorage) GetPortScanResultsByScan(scanJobID string) ([]*model.PortScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, ip_address, open_ports_json, closed_ports, total_scanned, scan_duration_ms, created_at
+              FROM port_scan_results WHERE scan_job_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, scanJobID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.PortScanResult
+	for rows.Next() {
+		r := &model.PortScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.IPAddress, &r.OpenPortsJSON,
+			&r.ClosedPorts, &r.TotalScanned,
+			&r.ScanDuration, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+// ssl
+func (p *PostgresStorage) CreateSSLScanResult(result *model.SSLScanResult) error {
+	query := `INSERT INTO ssl_scan_results (id, asset_id, scan_job_id, domain, cert_json, conn_json, grade, issues_json, created_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	_, err := p.db.Exec(query,
+		result.ID, result.AssetID, result.ScanJobID,
+		result.Domain, result.CertJSON, result.ConnJSON,
+		result.Grade, result.IssuesJSON, result.CreatedAt)
+	return err
+}
+
+func (p *PostgresStorage) GetSSLScanResultsByAsset(assetID string) ([]*model.SSLScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, domain, cert_json, conn_json, grade, issues_json, created_at
+              FROM ssl_scan_results WHERE asset_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, assetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.SSLScanResult
+	for rows.Next() {
+		r := &model.SSLScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.Domain, &r.CertJSON, &r.ConnJSON,
+			&r.Grade, &r.IssuesJSON, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+func (p *PostgresStorage) GetSSLScanResultsByScan(scanJobID string) ([]*model.SSLScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, domain, cert_json, conn_json, grade, issues_json, created_at
+              FROM ssl_scan_results WHERE scan_job_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, scanJobID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.SSLScanResult
+	for rows.Next() {
+		r := &model.SSLScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.Domain, &r.CertJSON, &r.ConnJSON,
+			&r.Grade, &r.IssuesJSON, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+// tech
+func (p *PostgresStorage) CreateTechScanResult(result *model.TechScanResult) error {
+	query := `INSERT INTO tech_scan_results (id, asset_id, scan_job_id, domain, tech_json, headers_json, meta_tags_json, created_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := p.db.Exec(query,
+		result.ID, result.AssetID, result.ScanJobID,
+		result.Domain, result.TechJSON, result.HeadersJSON,
+		result.MetaTagsJSON, result.CreatedAt)
+	return err
+}
+
+func (p *PostgresStorage) GetTechScanResultsByAsset(assetID string) ([]*model.TechScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, domain, tech_json, headers_json, meta_tags_json, created_at
+              FROM tech_scan_results WHERE asset_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, assetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.TechScanResult
+	for rows.Next() {
+		r := &model.TechScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.Domain, &r.TechJSON, &r.HeadersJSON,
+			&r.MetaTagsJSON, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
+func (p *PostgresStorage) GetTechScanResultsByScan(scanJobID string) ([]*model.TechScanResult, error) {
+	query := `SELECT id, asset_id, scan_job_id, domain, tech_json, headers_json, meta_tags_json, created_at
+              FROM tech_scan_results WHERE scan_job_id = $1 ORDER BY created_at DESC`
+	rows, err := p.db.Query(query, scanJobID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []*model.TechScanResult
+	for rows.Next() {
+		r := &model.TechScanResult{}
+		err := rows.Scan(&r.ID, &r.AssetID, &r.ScanJobID,
+			&r.Domain, &r.TechJSON, &r.HeadersJSON,
+			&r.MetaTagsJSON, &r.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, nil
+}
+
 /*
 🎓 NOTES - Scan Storage (Session 5)
 
 === KEY PATTERNS ===
 
 1. **UPSERT with ON CONFLICT**:
-   
+
    Problem: Subdomain might be discovered multiple times
    Solution: ON CONFLICT (asset_id, name) DO UPDATE
-   
+
    ```sql
    INSERT INTO subdomains (...)
    VALUES (...)
@@ -888,49 +1120,49 @@ func (p *PostgresStorage) GetWHOISRecordsByScan(scanJobID string) ([]*model.WHOI
        scan_job_id = EXCLUDED.EXCLUDED.scan_job_id,
        is_active = EXCLUDED.is_active
    ```
-   
+
    Behavior:
    - First time: INSERT new subdomain
    - Second time: UPDATE existing subdomain
    - No duplicate key error!
-   
+
    Use cases:
    - Subdomain found again → update scan_job_id, is_active
    - WHOIS record for same asset/scan → update with new data
 
 2. **Helper Methods for DRY**:
-   
+
    ```go
    func (p *PostgresStorage) GetSubdomainsByAsset(assetID) { ... }
    func (p *PostgresStorage) GetSubdomainsByScan(scanJobID) { ... }
    // Both use:
    func (p *PostgresStorage) querySubdomains(query, arg) { ... }
    ```
-   
+
    Benefits:
    - Avoid duplicating scan logic
    - Single place to fix bugs
    - Consistent error handling
 
 3. **Nullable Fields**:
-   
+
    ```go
    &job.EndedAt,    // *time.Time (nullable)
    &job.Error,      // string (PostgreSQL NULL → empty string)
    ```
-   
+
    PostgreSQL NULL handling:
    - Pointer types (*time.Time): SQL NULL → Go nil
    - String types: SQL NULL → Go empty string
    - No special handling needed!
 
 4. **Ordering**:
-   
+
    ```sql
    ORDER BY created_at DESC  -- Newest first
    ORDER BY created_at DESC, record_type  -- Newest, then by type
    ```
-   
+
    Common patterns:
    - Scan jobs: Most recent first
    - Results: Group by type, newest first
@@ -1017,7 +1249,7 @@ storage.UpdateScanJob(job)
 === COMPARISON WITH SESSION 4 ===
 
 Session 4: Single table (assets)
-Session 5: 
+Session 5:
   - Multiple related tables
   - Foreign key relationships
   - UPSERT operations
@@ -1070,4 +1302,3 @@ These methods follow the same patterns - students can implement!
 
 Storage layer is the foundation - get it right and everything else is easier!
 */
-

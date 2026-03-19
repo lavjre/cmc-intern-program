@@ -78,6 +78,8 @@ func main() {
 	mux.HandleFunc("GET /assets/{id}/subdomains", scanHandler.GetAssetSubdomains)
 	mux.HandleFunc("GET /assets/{id}/dns", scanHandler.GetAssetDNS)
 	mux.HandleFunc("GET /assets/{id}/whois", scanHandler.GetAssetWHOIS)
+	//bai1
+	mux.HandleFunc("GET /assets/{id}/results", scanHandler.GetAssetResults)
 
 	log.Println("✅ Routes registered:")
 	log.Println("   === Health ===")

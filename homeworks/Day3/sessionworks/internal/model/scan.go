@@ -12,6 +12,9 @@ const (
 	ScanTypePort      ScanType = "port"
 	ScanTypeASN       ScanType = "asn"
 	ScanTypeSSL       ScanType = "ssl"
+	//bai1
+	ScanTypeIP   ScanType = "ip"
+	ScanTypeTech ScanType = "tech"
 )
 
 // ScanStatus represents the status of a scan
@@ -79,7 +82,8 @@ type WHOISRecord struct {
 // IsValidScanType checks if the given scan type is valid
 func IsValidScanType(t ScanType) bool {
 	switch t {
-	case ScanTypeSubdomain, ScanTypeDNS, ScanTypeWHOIS, ScanTypePort, ScanTypeASN, ScanTypeSSL:
+	//bai1
+	case ScanTypeSubdomain, ScanTypeDNS, ScanTypeWHOIS, ScanTypePort, ScanTypeASN, ScanTypeSSL, ScanTypeIP, ScanTypeTech:
 		return true
 	}
 	return false
@@ -92,6 +96,57 @@ func IsValidScanStatus(s ScanStatus) bool {
 		return true
 	}
 	return false
+}
+
+// bai1
+// IPScanResult stores IP reconnaissance data
+type IPScanResult struct {
+	ID         string    `json:"id"`
+	AssetID    string    `json:"asset_id"`
+	ScanJobID  string    `json:"scan_job_id"`
+	IPAddress  string    `json:"ip_address"`
+	GeoJSON    string    `json:"geolocation"`
+	ASNJSON    string    `json:"asn"`
+	ReverseDNS string    `json:"reverse_dns"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+// PortScanResult stores port scan data
+type PortScanResult struct {
+	ID            string    `json:"id"`
+	AssetID       string    `json:"asset_id"`
+	ScanJobID     string    `json:"scan_job_id"`
+	IPAddress     string    `json:"ip_address"`
+	OpenPortsJSON string    `json:"open_ports"`
+	ClosedPorts   int       `json:"closed_ports"`
+	TotalScanned  int       `json:"total_scanned"`
+	ScanDuration  int       `json:"scan_duration_ms"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
+// SSLScanResult stores SSL certificate analysis (bonus)
+type SSLScanResult struct {
+	ID         string    `json:"id"`
+	AssetID    string    `json:"asset_id"`
+	ScanJobID  string    `json:"scan_job_id"`
+	Domain     string    `json:"domain"`
+	CertJSON   string    `json:"certificate"`
+	ConnJSON   string    `json:"connection"`
+	Grade      string    `json:"grade"`
+	IssuesJSON string    `json:"issues"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+// TechScanResult stores technology detection data (bonus)
+type TechScanResult struct {
+	ID           string    `json:"id"`
+	AssetID      string    `json:"asset_id"`
+	ScanJobID    string    `json:"scan_job_id"`
+	Domain       string    `json:"domain"`
+	TechJSON     string    `json:"technologies"`
+	HeadersJSON  string    `json:"headers"`
+	MetaTagsJSON string    `json:"meta_tags"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 /*

@@ -19,6 +19,11 @@ type ScanService struct {
 	dnsScanner       *scanner.DNSScanner
 	whoisScanner     *scanner.WHOISScanner
 	subdomainScanner *scanner.SubdomainScanner
+	//bai1
+	ipScanner   *scanner.IPScanner
+	portScanner *scanner.PortScanner
+	sslScanner  *scanner.SSLScanner
+	techScanner *scanner.TechScanner
 }
 
 // NewScanService creates a new scan service instance
@@ -34,6 +39,11 @@ func NewScanService(store storage.Storage, scanStore storage.ScanStorage) (*Scan
 		dnsScanner:       scanner.NewDNSScanner(),
 		whoisScanner:     scanner.NewWHOISScanner(),
 		subdomainScanner: subdomainScanner,
+		//bai1
+		ipScanner:   scanner.NewIPScanner(),
+		portScanner: scanner.NewPortScanner(),
+		sslScanner:  scanner.NewSSLScanner(),
+		techScanner: scanner.NewTechScanner(),
 	}, nil
 }
 
@@ -90,6 +100,15 @@ func (s *ScanService) performScan(asset *model.Asset, job *model.ScanJob) {
 		err = s.performWHOISScan(asset, job)
 	case model.ScanTypeSubdomain:
 		err = s.performSubdomainScan(asset, job)
+	//bai1
+	case model.ScanTypeIP:
+		err = s.performIPScan(asset, job)
+	case model.ScanTypePort:
+		err = s.performPortScan(asset, job)
+	case model.ScanTypeSSL:
+		err = s.performSSLScan(asset, job)
+	case model.ScanTypeTech:
+		err = s.performTechScan(asset, job)
 	default:
 		err = fmt.Errorf("unsupported scan type: %s", job.ScanType)
 	}
@@ -187,6 +206,75 @@ func (s *ScanService) performSubdomainScan(asset *model.Asset, job *model.ScanJo
 	return nil
 }
 
+// bai1
+func (s *ScanService) performIPScan(asset *model.Asset, job *model.ScanJob) error {
+	result, err := s.ipScanner.Scan(asset)
+	if err != nil {
+		return fmt.Errorf("IP scan failed: %w", err)
+	}
+	result.ID = uuid.New().String()
+	result.AssetID = asset.ID
+	result.ScanJobID = job.ID
+	result.CreatedAt = time.Now()
+
+	if err := s.scanStorage.CreateIPScanResult(result); err != nil {
+		return fmt.Errorf("failed to save IP scan result: %w", err)
+	}
+	job.Results = 1
+	return nil
+}
+
+func (s *ScanService) performPortScan(asset *model.Asset, job *model.ScanJob) error {
+	result, err := s.portScanner.Scan(asset)
+	if err != nil {
+		return fmt.Errorf("Port scan failed: %w", err)
+	}
+	result.ID = uuid.New().String()
+	result.AssetID = asset.ID
+	result.ScanJobID = job.ID
+	result.CreatedAt = time.Now()
+
+	if err := s.scanStorage.CreatePortScanResult(result); err != nil {
+		return fmt.Errorf("failed to save port scan result: %w", err)
+	}
+	job.Results = 1
+	return nil
+}
+
+func (s *ScanService) performSSLScan(asset *model.Asset, job *model.ScanJob) error {
+	result, err := s.sslScanner.Scan(asset)
+	if err != nil {
+		return fmt.Errorf("SSL scan failed: %w", err)
+	}
+	result.ID = uuid.New().String()
+	result.AssetID = asset.ID
+	result.ScanJobID = job.ID
+	result.CreatedAt = time.Now()
+
+	if err := s.scanStorage.CreateSSLScanResult(result); err != nil {
+		return fmt.Errorf("failed to save SSL scan result: %w", err)
+	}
+	job.Results = 1
+	return nil
+}
+
+func (s *ScanService) performTechScan(asset *model.Asset, job *model.ScanJob) error {
+	result, err := s.techScanner.Scan(asset)
+	if err != nil {
+		return fmt.Errorf("Tech scan failed: %w", err)
+	}
+	result.ID = uuid.New().String()
+	result.AssetID = asset.ID
+	result.ScanJobID = job.ID
+	result.CreatedAt = time.Now()
+
+	if err := s.scanStorage.CreateTechScanResult(result); err != nil {
+		return fmt.Errorf("failed to save tech scan result: %w", err)
+	}
+	job.Results = 1
+	return nil
+}
+
 // GetScanJob retrieves a scan job by ID
 func (s *ScanService) GetScanJob(jobID string) (*model.ScanJob, error) {
 	return s.scanStorage.GetScanJob(jobID)
@@ -218,6 +306,15 @@ func (s *ScanService) GetScanResults(jobID string) (interface{}, error) {
 		return s.scanStorage.GetWHOISRecordsByScan(jobID)
 	case model.ScanTypeSubdomain:
 		return s.scanStorage.GetSubdomainsByScan(jobID)
+	//bai1
+	case model.ScanTypeIP:
+		return s.scanStorage.GetIPScanResultsByScan(jobID)
+	case model.ScanTypePort:
+		return s.scanStorage.GetPortScanResultsByScan(jobID)
+	case model.ScanTypeSSL:
+		return s.scanStorage.GetSSLScanResultsByScan(jobID)
+	case model.ScanTypeTech:
+		return s.scanStorage.GetTechScanResultsByScan(jobID)
 	default:
 		return nil, fmt.Errorf("unsupported scan type: %s", job.ScanType)
 	}
@@ -236,6 +333,40 @@ func (s *ScanService) GetAssetDNSRecords(assetID string) ([]*model.DNSRecord, er
 // GetAssetWHOIS retrieves the latest WHOIS record for an asset
 func (s *ScanService) GetAssetWHOIS(assetID string) (*model.WHOISRecord, error) {
 	return s.scanStorage.GetWHOISRecordByAsset(assetID)
+}
+
+// bai1
+// GetA GetScanResultssetResults returns all scan results for an asset (aggregate)
+func (s *ScanService) GetAssetResults(assetID string) (map[string]interface{}, error) {
+	if _, err := s.storage.GetByID(assetID); err != nil {
+		return nil, fmt.Errorf("asset not found: %w", err)
+	}
+
+	results := map[string]interface{}{}
+
+	if subs, _ := s.scanStorage.GetSubdomainsByAsset(assetID); len(subs) > 0 {
+		results["subdomains"] = subs
+	}
+	if dns, _ := s.scanStorage.GetDNSRecordsByAsset(assetID); len(dns) > 0 {
+		results["dns_records"] = dns
+	}
+	if whois, _ := s.scanStorage.GetWHOISRecordByAsset(assetID); whois != nil {
+		results["whois"] = whois
+	}
+	if ips, _ := s.scanStorage.GetIPScanResultsByAsset(assetID); len(ips) > 0 {
+		results["ip_scan"] = ips
+	}
+	if ports, _ := s.scanStorage.GetPortScanResultsByAsset(assetID); len(ports) > 0 {
+		results["port_scan"] = ports
+	}
+	if ssls, _ := s.scanStorage.GetSSLScanResultsByAsset(assetID); len(ssls) > 0 {
+		results["ssl_scan"] = ssls
+	}
+	if techs, _ := s.scanStorage.GetTechScanResultsByAsset(assetID); len(techs) > 0 {
+		results["tech_scan"] = techs
+	}
+
+	return results, nil
 }
 
 /*

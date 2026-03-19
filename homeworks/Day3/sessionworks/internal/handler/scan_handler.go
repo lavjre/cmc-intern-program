@@ -192,6 +192,25 @@ func (h *ScanHandler) GetAssetWHOIS(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(record)
 }
 
+// bai1
+func (h *ScanHandler) GetAssetResults(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		http.Error(w, "asset ID required", http.StatusBadRequest)
+		return
+	}
+
+	results, err := h.scanService.GetAssetResults(assetID)
+	if err != nil {
+		status := mapErrorToStatus(err)
+		http.Error(w, err.Error(), status)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
 /*
 🎓 TEACHING NOTES - Scan Handler
 
