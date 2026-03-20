@@ -23,192 +23,151 @@ func NewScanHandler(scanService *service.ScanService) *ScanHandler {
 // StartScan initiates a scan for an asset
 // POST /assets/{id}/scan
 func (h *ScanHandler) StartScan(w http.ResponseWriter, r *http.Request) {
-	// Extract asset ID from path
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
-	// Parse request body
 	var req struct {
 		ScanType model.ScanType `json:"scan_type"`
 	}
-
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "invalid request body"})
 		return
 	}
 
-	// Start scan
 	job, err := h.scanService.StartScan(assetID, req.ScanType)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return job info
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted) // 202 Accepted (async operation)
-	json.NewEncoder(w).Encode(job)
+	respondJSON(w, http.StatusAccepted, job)
 }
 
 // GetScanJob retrieves scan job status
 // GET /scan-jobs/{id}
 func (h *ScanHandler) GetScanJob(w http.ResponseWriter, r *http.Request) {
-	// Extract job ID from path
 	jobID := r.PathValue("id")
 	if jobID == "" {
-		http.Error(w, "job ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "job ID required"})
 		return
 	}
 
-	// Get job
 	job, err := h.scanService.GetScanJob(jobID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return job
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(job)
+	respondJSON(w, http.StatusOK, job)
 }
 
 // GetScanResults retrieves results for a scan job
 // GET /scan-jobs/{id}/results
 func (h *ScanHandler) GetScanResults(w http.ResponseWriter, r *http.Request) {
-	// Extract job ID from path
 	jobID := r.PathValue("id")
 	if jobID == "" {
-		http.Error(w, "job ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "job ID required"})
 		return
 	}
 
-	// Get results
 	results, err := h.scanService.GetScanResults(jobID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return results
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
+	respondJSON(w, http.StatusOK, results)
 }
 
 // ListScanJobs retrieves all scan jobs for an asset
 // GET /assets/{id}/scans
 func (h *ScanHandler) ListScanJobs(w http.ResponseWriter, r *http.Request) {
-	// Extract asset ID from path
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
-	// Get jobs
 	jobs, err := h.scanService.ListScanJobs(assetID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return jobs
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(jobs)
+	respondJSON(w, http.StatusOK, jobs)
 }
 
 // GetAssetSubdomains retrieves all subdomains for an asset
 // GET /assets/{id}/subdomains
 func (h *ScanHandler) GetAssetSubdomains(w http.ResponseWriter, r *http.Request) {
-	// Extract asset ID from path
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
-	// Get subdomains
 	subdomains, err := h.scanService.GetAssetSubdomains(assetID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return subdomains
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(subdomains)
+	respondJSON(w, http.StatusOK, subdomains)
 }
 
 // GetAssetDNS retrieves all DNS records for an asset
 // GET /assets/{id}/dns
 func (h *ScanHandler) GetAssetDNS(w http.ResponseWriter, r *http.Request) {
-	// Extract asset ID from path
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
-	// Get DNS records
 	records, err := h.scanService.GetAssetDNSRecords(assetID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return records
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(records)
+	respondJSON(w, http.StatusOK, records)
 }
 
 // GetAssetWHOIS retrieves WHOIS information for an asset
 // GET /assets/{id}/whois
 func (h *ScanHandler) GetAssetWHOIS(w http.ResponseWriter, r *http.Request) {
-	// Extract asset ID from path
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
-	// Get WHOIS record
 	record, err := h.scanService.GetAssetWHOIS(assetID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Return record
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(record)
+	respondJSON(w, http.StatusOK, record)
 }
 
-// bai1
 func (h *ScanHandler) GetAssetResults(w http.ResponseWriter, r *http.Request) {
 	assetID := r.PathValue("id")
 	if assetID == "" {
-		http.Error(w, "asset ID required", http.StatusBadRequest)
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
 		return
 	}
 
 	results, err := h.scanService.GetAssetResults(assetID)
 	if err != nil {
-		status := mapErrorToStatus(err)
-		http.Error(w, err.Error(), status)
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
+	respondJSON(w, http.StatusOK, results)
 }
 
 /*

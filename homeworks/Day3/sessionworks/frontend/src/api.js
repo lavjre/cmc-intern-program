@@ -1,9 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
+async function handleResponse(res) {
+  if (res.ok) return res.status === 204 ? null : res.json();
+  let message;
+  try {
+    const body = await res.json();
+    message = body.error || JSON.stringify(body);
+  } catch {
+    message = await res.text();
+  }
+  throw new Error(message || `HTTP ${res.status}`);
+}
+
 export async function getAssets() {
   const res = await fetch(`${API_URL}/assets`);
-  if (!res.ok) throw new Error("Failed to fetch assets");
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function createAsset(payload) {
@@ -12,13 +23,12 @@ export async function createAsset(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to create asset");
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function deleteAsset(id) {
   const res = await fetch(`${API_URL}/assets/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete asset");
+  return handleResponse(res);
 }
 
 export async function startScan(assetId, scanType) {
@@ -27,24 +37,20 @@ export async function startScan(assetId, scanType) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ scan_type: scanType }),
   });
-  if (!res.ok) throw new Error("Failed to start scan");
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function getScanJob(jobId) {
   const res = await fetch(`${API_URL}/scan-jobs/${jobId}`);
-  if (!res.ok) throw new Error("Failed to get scan job");
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function getScanResults(jobId) {
   const res = await fetch(`${API_URL}/scan-jobs/${jobId}/results`);
-  if (!res.ok) throw new Error("Failed to get results");
-  return res.json();
+  return handleResponse(res);
 }
 
 export async function getAssetResults(assetId) {
   const res = await fetch(`${API_URL}/assets/${assetId}/results`);
-  if (!res.ok) throw new Error("Failed to get results");
-  return res.json();
+  return handleResponse(res);
 }

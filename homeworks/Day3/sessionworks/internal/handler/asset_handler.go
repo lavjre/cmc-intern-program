@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"mini-asm/internal/model"
 	"mini-asm/internal/service"
@@ -153,26 +155,20 @@ func respondJSON(w http.ResponseWriter, status int, data interface{}) {
 
 // mapErrorToStatus maps domain errors to HTTP status codes
 func mapErrorToStatus(err error) int {
-	switch err {
-	case model.ErrNotFound:
+	if errors.Is(err, model.ErrNotFound) {
 		return http.StatusNotFound
-	case model.ErrInvalidInput, model.ErrEmptyName, model.ErrInvalidType, model.ErrInvalidStatus:
-		return http.StatusBadRequest
-	default:
-		// Check if error message contains validation keywords
-		errMsg := err.Error()
-		if contains(errMsg, "invalid") || contains(errMsg, "required") || contains(errMsg, "too long") {
-			return http.StatusBadRequest
-		}
-		return http.StatusInternalServerError
 	}
-}
-
-// contains checks if a string contains a substring (case-insensitive)
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) &&
-		(s[:len(substr)] == substr || s[len(s)-len(substr):] == substr ||
-			len(s) > len(substr)*2))
+	if errors.Is(err, model.ErrInvalidInput) ||
+		errors.Is(err, model.ErrEmptyName) ||
+		errors.Is(err, model.ErrInvalidType) ||
+		errors.Is(err, model.ErrInvalidStatus) {
+		return http.StatusBadRequest
+	}
+	errMsg := err.Error()
+	if strings.Contains(errMsg, "invalid") || strings.Contains(errMsg, "required") || strings.Contains(errMsg, "too long") {
+		return http.StatusBadRequest
+	}
+	return http.StatusInternalServerError
 }
 
 /*

@@ -78,9 +78,7 @@ func (s *ScanService) StartScan(assetID string, scanType model.ScanType) (*model
 	}
 
 	// Start scan in background
-	//go s.performScan(asset, job)
-
-	s.performScan(asset, job)
+	go s.performScan(asset, job)
 
 	return job, nil
 }
