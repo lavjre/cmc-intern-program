@@ -49,3 +49,8 @@ logs/
 # Temporary files
 tmp/
 temp/
+
+# Cloudflare Tunnel secrets
+.cloudflared/config.yml
+.cloudflared/*.json
+.cloudflared/cert.pem
