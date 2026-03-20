@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { FileText, Globe, Server, Wifi, Lock, Cpu } from "lucide-react";
-import { assetsAPI, resultsAPI } from "../services/api";
+import { FileText, Globe, Server, Wifi, Lock, Cpu, Download, GitCompare, RefreshCw } from "lucide-react";
+import { assetsAPI, resultsAPI, scanningAPI, compareAPI, exportAPI } from "../services/api";
 
 function safeJSON(str) {
   if (!str) return null;
@@ -13,6 +13,14 @@ function Results() {
   const [resultType, setResultType] = useState("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // 6.4 Comparison
+  const [scanJobs, setScanJobs] = useState([]);
+  const [compareJob1, setCompareJob1] = useState("");
+  const [compareJob2, setCompareJob2] = useState("");
+  const [comparing, setComparing] = useState(false);
+  const [diffResult, setDiffResult] = useState(null);
+  const [showCompare, setShowCompare] = useState(false);
 
   const [whoisData, setWhoisData]       = useState(null);
   const [dnsData, setDnsData]           = useState([]);
@@ -72,6 +80,27 @@ function Results() {
   };
 
   const selectedAssetData = assets.find((a) => a.id === selectedAsset);
+
+  useEffect(() => {
+    if (selectedAsset) {
+      scanningAPI.listJobs(selectedAsset).then(d => setScanJobs(d.data || [])).catch(() => {});
+      setDiffResult(null);
+    }
+  }, [selectedAsset]);
+
+  const handleCompare = async () => {
+    if (!compareJob1 || !compareJob2) return;
+    setComparing(true);
+    setDiffResult(null);
+    try {
+      const diff = await compareAPI.compare(selectedAsset, compareJob1, compareJob2);
+      setDiffResult(diff);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setComparing(false);
+    }
+  };
 
   // ── Renderers ──────────────────────────────────────────────────────────────
 
@@ -336,14 +365,81 @@ function Results() {
         </div>
         {selectedAssetData && (
           <div className="mt-4 p-4 bg-gray-50 rounded-md">
-            <div className="flex items-center gap-4 text-sm text-muted">
-              <span><strong>Name:</strong> {selectedAssetData.name}</span>
-              <span><strong>Type:</strong> {selectedAssetData.type}</span>
-              <span><strong>Status:</strong> {selectedAssetData.status}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <div className="flex items-center gap-4 text-sm text-muted" style={{ flex: 1 }}>
+                <span><strong>Name:</strong> {selectedAssetData.name}</span>
+                <span><strong>Type:</strong> {selectedAssetData.type}</span>
+                <span><strong>Status:</strong> {selectedAssetData.status}</span>
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <a className="btn btn-secondary btn-sm" href={exportAPI.scanResults(selectedAsset)} download>
+                  <Download size={14} /> Export CSV
+                </a>
+                <button className="btn btn-secondary btn-sm" onClick={() => setShowCompare(v => !v)}>
+                  <GitCompare size={14} /> Compare Scans
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* 6.4 Scan Comparison panel */}
+      {showCompare && selectedAsset && (
+        <div className="card" style={{ marginBottom: "1rem" }}>
+          <h3 className="card-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <GitCompare size={18} /> Compare Two Scan Jobs
+          </h3>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-end", flexWrap: "wrap", marginTop: "0.75rem" }}>
+            <div style={{ flex: "1 1 200px" }}>
+              <label className="form-label">Baseline (older)</label>
+              <select className="form-input" value={compareJob1} onChange={e => setCompareJob1(e.target.value)}>
+                <option value="">— select job —</option>
+                {scanJobs.map(j => (
+                  <option key={j.id} value={j.id}>{j.scan_type} · {new Date(j.created_at).toLocaleString()} · {j.status}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ flex: "1 1 200px" }}>
+              <label className="form-label">Comparison (newer)</label>
+              <select className="form-input" value={compareJob2} onChange={e => setCompareJob2(e.target.value)}>
+                <option value="">— select job —</option>
+                {scanJobs.map(j => (
+                  <option key={j.id} value={j.id}>{j.scan_type} · {new Date(j.created_at).toLocaleString()} · {j.status}</option>
+                ))}
+              </select>
+            </div>
+            <button className="btn btn-primary" onClick={handleCompare} disabled={!compareJob1 || !compareJob2 || comparing}>
+              {comparing ? <RefreshCw size={16} className="animate-spin" /> : <GitCompare size={16} />}
+              Compare
+            </button>
+          </div>
+          {diffResult && (
+            <div style={{ marginTop: "1rem", background: "#f9fafb", borderRadius: "6px", padding: "1rem" }}>
+              <p style={{ fontWeight: 600, marginBottom: "0.5rem" }}>{diffResult.summary}</p>
+              {diffResult.added?.length > 0 && (
+                <div style={{ marginBottom: "0.5rem" }}>
+                  <p style={{ color: "#16a34a", fontWeight: 600, fontSize: "0.85rem" }}>+ Added ({diffResult.added.length})</p>
+                  <pre style={{ fontSize: "0.75rem", background: "#dcfce7", padding: "0.5rem", borderRadius: "4px", overflow: "auto", maxHeight: "200px" }}>
+                    {JSON.stringify(diffResult.added, null, 2)}
+                  </pre>
+                </div>
+              )}
+              {diffResult.removed?.length > 0 && (
+                <div>
+                  <p style={{ color: "#dc2626", fontWeight: 600, fontSize: "0.85rem" }}>- Removed ({diffResult.removed.length})</p>
+                  <pre style={{ fontSize: "0.75rem", background: "#fee2e2", padding: "0.5rem", borderRadius: "4px", overflow: "auto", maxHeight: "200px" }}>
+                    {JSON.stringify(diffResult.removed, null, 2)}
+                  </pre>
+                </div>
+              )}
+              {!diffResult.added?.length && !diffResult.removed?.length && (
+                <p className="text-muted" style={{ fontSize: "0.85rem" }}>No differences found between the two scans.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div className="card"><div className="loading"><div className="spinner"></div><span>Loading results...</span></div></div>

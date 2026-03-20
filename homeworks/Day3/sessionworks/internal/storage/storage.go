@@ -104,6 +104,31 @@ type ScanStorage interface {
 	GetTechScanResultsByScan(scanJobID string) ([]*model.TechScanResult, error)
 }
 
+// FeatureStorage covers the bonus feature tables (tags, schedules, alerts).
+type FeatureStorage interface {
+	// 6.2 Tags
+	AddTag(assetID, tag string) error
+	RemoveTag(assetID, tag string) error
+	GetTagsByAsset(assetID string) ([]string, error)
+	GetAssetsByTag(tag string) ([]*model.Asset, error)
+	GetAllTags() ([]string, error)
+
+	// 6.1 Scheduled scans
+	CreateSchedule(s *model.ScanSchedule) error
+	GetSchedules() ([]*model.ScanSchedule, error)
+	GetSchedulesByAsset(assetID string) ([]*model.ScanSchedule, error)
+	UpdateSchedule(s *model.ScanSchedule) error
+	DeleteSchedule(id string) error
+	GetDueSchedules() ([]*model.ScanSchedule, error)
+
+	// 6.3 Alerts
+	CreateAlert(a *model.Alert) error
+	GetAlerts(resolvedFilter *bool) ([]*model.Alert, error)
+	GetAlertsByAsset(assetID string, resolvedFilter *bool) ([]*model.Alert, error)
+	ResolveAlert(id string) error
+	CountUnresolvedAlerts() (int, error)
+}
+
 /*
 🎓 NOTES - Session 5:
 

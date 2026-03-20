@@ -12,11 +12,13 @@ func TestIsValidScanType(t *testing.T) {
 		input model.ScanType
 		want  bool
 	}{
+		{"all", model.ScanTypeAll, true},
 		{"dns", model.ScanTypeDNS, true},
 		{"whois", model.ScanTypeWHOIS, true},
 		{"subdomain", model.ScanTypeSubdomain, true},
 		{"port", model.ScanTypePort, true},
 		{"asn", model.ScanTypeASN, true},
+		{"cert_trans", model.ScanTypeCertTrans, true},
 		{"ssl", model.ScanTypeSSL, true},
 		{"ip", model.ScanTypeIP, true},
 		{"tech", model.ScanTypeTech, true},
@@ -61,11 +63,13 @@ func TestIsValidScanStatus(t *testing.T) {
 
 func TestScanTypeConstants(t *testing.T) {
 	expected := map[model.ScanType]string{
+		model.ScanTypeAll:       "all",
 		model.ScanTypeSubdomain: "subdomain",
 		model.ScanTypeDNS:       "dns",
 		model.ScanTypeWHOIS:     "whois",
 		model.ScanTypePort:      "port",
 		model.ScanTypeASN:       "asn",
+		model.ScanTypeCertTrans: "cert_trans",
 		model.ScanTypeSSL:       "ssl",
 		model.ScanTypeIP:        "ip",
 		model.ScanTypeTech:      "tech",

@@ -1103,6 +1103,196 @@ func (p *PostgresStorage) GetTechScanResultsByScan(scanJobID string) ([]*model.T
 	return results, nil
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 6.2 Tags
+// ─────────────────────────────────────────────────────────────────────────────
+
+func (s *PostgresStorage) AddTag(assetID, tag string) error {
+	_, err := s.db.Exec(
+		`INSERT INTO asset_tags (asset_id, tag) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+		assetID, tag)
+	return err
+}
+
+func (s *PostgresStorage) RemoveTag(assetID, tag string) error {
+	_, err := s.db.Exec(`DELETE FROM asset_tags WHERE asset_id=$1 AND tag=$2`, assetID, tag)
+	return err
+}
+
+func (s *PostgresStorage) GetTagsByAsset(assetID string) ([]string, error) {
+	rows, err := s.db.Query(`SELECT tag FROM asset_tags WHERE asset_id=$1 ORDER BY tag`, assetID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var tags []string
+	for rows.Next() {
+		var t string
+		if err := rows.Scan(&t); err != nil {
+			return nil, err
+		}
+		tags = append(tags, t)
+	}
+	return tags, nil
+}
+
+func (s *PostgresStorage) GetAssetsByTag(tag string) ([]*model.Asset, error) {
+	rows, err := s.db.Query(
+		`SELECT a.id, a.name, a.type, a.status, a.description, a.created_at, a.updated_at
+		 FROM assets a
+		 JOIN asset_tags t ON t.asset_id = a.id
+		 WHERE t.tag=$1 ORDER BY a.name`,
+		tag)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var assets []*model.Asset
+	for rows.Next() {
+		a := &model.Asset{}
+		if err := rows.Scan(&a.ID, &a.Name, &a.Type, &a.Status, &a.CreatedAt, &a.UpdatedAt); err != nil {
+			return nil, err
+		}
+		assets = append(assets, a)
+	}
+	return assets, nil
+}
+
+func (s *PostgresStorage) GetAllTags() ([]string, error) {
+	rows, err := s.db.Query(`SELECT DISTINCT tag FROM asset_tags ORDER BY tag`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var tags []string
+	for rows.Next() {
+		var t string
+		if err := rows.Scan(&t); err != nil {
+			return nil, err
+		}
+		tags = append(tags, t)
+	}
+	return tags, nil
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6.1 Scheduled Scans
+// ─────────────────────────────────────────────────────────────────────────────
+
+func (s *PostgresStorage) CreateSchedule(sc *model.ScanSchedule) error {
+	_, err := s.db.Exec(
+		`INSERT INTO scan_schedules (id, asset_id, scan_type, interval_hours, next_run, enabled, created_at)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		sc.ID, sc.AssetID, sc.ScanType, sc.IntervalHours, sc.NextRun, sc.Enabled, sc.CreatedAt)
+	return err
+}
+
+func (s *PostgresStorage) GetSchedules() ([]*model.ScanSchedule, error) {
+	return s.scanScheduleRows(`SELECT id,asset_id,scan_type,interval_hours,next_run,enabled,created_at FROM scan_schedules ORDER BY created_at DESC`)
+}
+
+func (s *PostgresStorage) GetSchedulesByAsset(assetID string) ([]*model.ScanSchedule, error) {
+	return s.scanScheduleRows(
+		`SELECT id,asset_id,scan_type,interval_hours,next_run,enabled,created_at FROM scan_schedules WHERE asset_id=$1 ORDER BY created_at DESC`,
+		assetID)
+}
+
+func (s *PostgresStorage) GetDueSchedules() ([]*model.ScanSchedule, error) {
+	return s.scanScheduleRows(
+		`SELECT id,asset_id,scan_type,interval_hours,next_run,enabled,created_at FROM scan_schedules WHERE enabled=true AND next_run <= NOW()`)
+}
+
+func (s *PostgresStorage) UpdateSchedule(sc *model.ScanSchedule) error {
+	_, err := s.db.Exec(
+		`UPDATE scan_schedules SET interval_hours=$1, next_run=$2, enabled=$3 WHERE id=$4`,
+		sc.IntervalHours, sc.NextRun, sc.Enabled, sc.ID)
+	return err
+}
+
+func (s *PostgresStorage) DeleteSchedule(id string) error {
+	_, err := s.db.Exec(`DELETE FROM scan_schedules WHERE id=$1`, id)
+	return err
+}
+
+func (s *PostgresStorage) scanScheduleRows(q string, args ...interface{}) ([]*model.ScanSchedule, error) {
+	rows, err := s.db.Query(q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var list []*model.ScanSchedule
+	for rows.Next() {
+		sc := &model.ScanSchedule{}
+		if err := rows.Scan(&sc.ID, &sc.AssetID, &sc.ScanType, &sc.IntervalHours, &sc.NextRun, &sc.Enabled, &sc.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, sc)
+	}
+	return list, nil
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6.3 Alerts
+// ─────────────────────────────────────────────────────────────────────────────
+
+func (s *PostgresStorage) CreateAlert(a *model.Alert) error {
+	_, err := s.db.Exec(
+		`INSERT INTO alerts (id, asset_id, scan_job_id, alert_type, severity, message, resolved, created_at)
+		 VALUES ($1, $2, NULLIF($3,''), $4, $5, $6, $7, $8)`,
+		a.ID, a.AssetID, a.ScanJobID, a.AlertType, a.Severity, a.Message, a.Resolved, a.CreatedAt)
+	return err
+}
+
+func (s *PostgresStorage) GetAlerts(resolvedFilter *bool) ([]*model.Alert, error) {
+	q := `SELECT id,asset_id,COALESCE(scan_job_id,''),alert_type,severity,message,resolved,created_at FROM alerts`
+	var args []interface{}
+	if resolvedFilter != nil {
+		q += " WHERE resolved=$1"
+		args = append(args, *resolvedFilter)
+	}
+	q += " ORDER BY created_at DESC"
+	return s.alertRows(q, args...)
+}
+
+func (s *PostgresStorage) GetAlertsByAsset(assetID string, resolvedFilter *bool) ([]*model.Alert, error) {
+	q := `SELECT id,asset_id,COALESCE(scan_job_id,''),alert_type,severity,message,resolved,created_at FROM alerts WHERE asset_id=$1`
+	args := []interface{}{assetID}
+	if resolvedFilter != nil {
+		q += " AND resolved=$2"
+		args = append(args, *resolvedFilter)
+	}
+	q += " ORDER BY created_at DESC"
+	return s.alertRows(q, args...)
+}
+
+func (s *PostgresStorage) ResolveAlert(id string) error {
+	_, err := s.db.Exec(`UPDATE alerts SET resolved=true WHERE id=$1`, id)
+	return err
+}
+
+func (s *PostgresStorage) CountUnresolvedAlerts() (int, error) {
+	var count int
+	err := s.db.QueryRow(`SELECT COUNT(*) FROM alerts WHERE resolved=false`).Scan(&count)
+	return count, err
+}
+
+func (s *PostgresStorage) alertRows(q string, args ...interface{}) ([]*model.Alert, error) {
+	rows, err := s.db.Query(q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var list []*model.Alert
+	for rows.Next() {
+		a := &model.Alert{}
+		if err := rows.Scan(&a.ID, &a.AssetID, &a.ScanJobID, &a.AlertType, &a.Severity, &a.Message, &a.Resolved, &a.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, a)
+	}
+	return list, nil
+}
+
 /*
 🎓 NOTES - Scan Storage (Session 5)
 

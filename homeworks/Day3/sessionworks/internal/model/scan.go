@@ -1,21 +1,81 @@
 package model
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // ScanType represents the type of scan being performed
 type ScanType string
 
 const (
+	ScanTypeAll       ScanType = "all"       // run all passive scans
 	ScanTypeSubdomain ScanType = "subdomain"
 	ScanTypeDNS       ScanType = "dns"
 	ScanTypeWHOIS     ScanType = "whois"
-	ScanTypePort      ScanType = "port"
 	ScanTypeASN       ScanType = "asn"
-	ScanTypeSSL       ScanType = "ssl"
-	//bai1
-	ScanTypeIP   ScanType = "ip"
+	ScanTypeCertTrans ScanType = "cert_trans"
+	ScanTypeIP        ScanType = "ip"
+	// active — require explicit authorization
+	ScanTypePort ScanType = "port"
+	ScanTypeSSL  ScanType = "ssl"
 	ScanTypeTech ScanType = "tech"
 )
+
+// ScanCategory classifies a scan as passive (safe) or active (requires permission).
+type ScanCategory string
+
+const (
+	ScanCategoryPassive ScanCategory = "passive"
+	ScanCategoryActive  ScanCategory = "active"
+)
+
+// Category returns whether the scan type is passive or active.
+func (t ScanType) Category() ScanCategory {
+	switch t {
+	case ScanTypePort, ScanTypeSSL, ScanTypeTech:
+		return ScanCategoryActive
+	default:
+		return ScanCategoryPassive
+	}
+}
+
+// IsPassive reports whether the scan does not directly probe the target.
+func (t ScanType) IsPassive() bool { return t.Category() == ScanCategoryPassive }
+
+// IsActive reports whether the scan directly contacts the target system.
+func (t ScanType) IsActive() bool { return t.Category() == ScanCategoryActive }
+
+// RequiresPermission reports whether explicit authorization is needed before running.
+func (t ScanType) RequiresPermission() bool { return t.IsActive() }
+
+// Description returns a human-readable description of the scan type.
+func (t ScanType) Description() string {
+	switch t {
+	case ScanTypeAll:
+		return "All passive scans - runs all safe passive reconnaissance"
+	case ScanTypeDNS:
+		return "DNS Records - query public DNS A, AAAA, MX, NS, TXT records"
+	case ScanTypeWHOIS:
+		return "WHOIS Lookup - domain registration information"
+	case ScanTypeSubdomain:
+		return "Subdomain Enumeration - DNS bruteforce discovery"
+	case ScanTypeASN:
+		return "ASN Lookup - Autonomous System information"
+	case ScanTypeCertTrans:
+		return "Certificate Transparency - CT log analysis"
+	case ScanTypeIP:
+		return "IP Geolocation - public IP geo and ASN lookup"
+	case ScanTypePort:
+		return "Port Scan (Active) - TCP port scanning, requires permission"
+	case ScanTypeSSL:
+		return "SSL/TLS Probe (Active) - certificate and cipher analysis, requires permission"
+	case ScanTypeTech:
+		return "Tech Detection (Active) - HTTP-based technology fingerprinting, requires permission"
+	default:
+		return strings.Title(string(t)) + " scan"
+	}
+}
 
 // ScanStatus represents the status of a scan
 type ScanStatus string
@@ -82,8 +142,9 @@ type WHOISRecord struct {
 // IsValidScanType checks if the given scan type is valid
 func IsValidScanType(t ScanType) bool {
 	switch t {
-	//bai1
-	case ScanTypeSubdomain, ScanTypeDNS, ScanTypeWHOIS, ScanTypePort, ScanTypeASN, ScanTypeSSL, ScanTypeIP, ScanTypeTech:
+	case ScanTypeAll, ScanTypeSubdomain, ScanTypeDNS, ScanTypeWHOIS,
+		ScanTypePort, ScanTypeASN, ScanTypeCertTrans, ScanTypeSSL,
+		ScanTypeIP, ScanTypeTech:
 		return true
 	}
 	return false

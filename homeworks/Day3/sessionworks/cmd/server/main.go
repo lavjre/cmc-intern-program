@@ -46,9 +46,15 @@ func main() {
 	}
 	log.Println("✅ Service initialized: ScanService with DNS, WHOIS, Subdomain scanners")
 
+	// Feature service (bonus bài 6)
+	featureService := service.NewFeatureService(store, store, store, scanService)
+	featureService.StartScheduler()
+	log.Println("✅ Service initialized: FeatureService (tags, schedules, alerts, compare, export)")
+
 	// Handler layer
 	assetHandler := handler.NewAssetHandler(assetService)
 	scanHandler := handler.NewScanHandler(scanService)
+	featureHandler := handler.NewFeatureHandler(featureService)
 	healthHandler := handler.NewHealthHandler()
 	log.Println("✅ Handlers initialized")
 
@@ -70,6 +76,7 @@ func main() {
 
 	// Scan operations (Session 5 - NEW!)
 	mux.HandleFunc("POST /assets/{id}/scan", scanHandler.StartScan)
+	mux.HandleFunc("POST /assets/{id}/scan/demo", scanHandler.DemoSyncVsAsync)
 	mux.HandleFunc("GET /assets/{id}/scans", scanHandler.ListScanJobs)
 	mux.HandleFunc("GET /scan-jobs/{id}", scanHandler.GetScanJob)
 	mux.HandleFunc("GET /scan-jobs/{id}/results", scanHandler.GetScanResults)
@@ -82,8 +89,35 @@ func main() {
 	mux.HandleFunc("GET /assets/{id}/ports", scanHandler.GetAssetPortScan)
 	mux.HandleFunc("GET /assets/{id}/ssl", scanHandler.GetAssetSSLScan)
 	mux.HandleFunc("GET /assets/{id}/tech", scanHandler.GetAssetTechScan)
-	//bai1
 	mux.HandleFunc("GET /assets/{id}/results", scanHandler.GetAssetResults)
+
+	// ── Bonus bài 6 ────────────────────────────────────────────────────────
+	// 6.2 Tags
+	mux.HandleFunc("GET /assets/{id}/tags",        featureHandler.GetTags)
+	mux.HandleFunc("POST /assets/{id}/tags",       featureHandler.AddTag)
+	mux.HandleFunc("DELETE /assets/{id}/tags/{tag}", featureHandler.RemoveTag)
+	mux.HandleFunc("GET /tags",                    featureHandler.ListTags)
+	mux.HandleFunc("GET /tags/{tag}/assets",       featureHandler.GetAssetsByTag)
+
+	// 6.1 Scheduled scans
+	mux.HandleFunc("GET /schedules",              featureHandler.GetSchedules)
+	mux.HandleFunc("POST /schedules",             featureHandler.CreateSchedule)
+	mux.HandleFunc("DELETE /schedules/{id}",      featureHandler.DeleteSchedule)
+	mux.HandleFunc("PATCH /schedules/{id}",       featureHandler.ToggleSchedule)
+	mux.HandleFunc("GET /assets/{id}/schedules",  featureHandler.GetSchedulesByAsset)
+
+	// 6.3 Alerts
+	mux.HandleFunc("GET /alerts",                 featureHandler.GetAlerts)
+	mux.HandleFunc("GET /alerts/count",           featureHandler.AlertCount)
+	mux.HandleFunc("POST /alerts/{id}/resolve",   featureHandler.ResolveAlert)
+	mux.HandleFunc("GET /assets/{id}/alerts",     featureHandler.GetAlertsByAsset)
+
+	// 6.4 Scan comparison
+	mux.HandleFunc("GET /assets/{id}/compare",    featureHandler.CompareScan)
+
+	// 6.5 Export
+	mux.HandleFunc("GET /assets/export",          featureHandler.ExportAssets)
+	mux.HandleFunc("GET /assets/{id}/results/export", featureHandler.ExportScanResults)
 
 	log.Println("✅ Routes registered:")
 	log.Println("   === Health ===")

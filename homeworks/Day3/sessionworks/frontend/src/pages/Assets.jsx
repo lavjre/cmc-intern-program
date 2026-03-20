@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Globe, Server, Link as LinkIcon, Database } from "lucide-react";
-import { assetsAPI } from "../services/api";
+import { Plus, Trash2, Edit, Globe, Server, Link as LinkIcon, Database, Tag, Download, X } from "lucide-react";
+import { assetsAPI, tagsAPI, exportAPI } from "../services/api";
 
 function Assets() {
   const [assets, setAssets] = useState([]);
@@ -11,6 +11,11 @@ function Assets() {
   const [editingAsset, setEditingAsset] = useState(null);
   const [formData, setFormData] = useState({ name: "", type: "domain" });
   const [error, setError] = useState("");
+
+  // Tags state
+  const [tagAsset, setTagAsset] = useState(null);    // asset whose tags we're managing
+  const [assetTags, setAssetTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
 
   useEffect(() => {
     loadAssets();
@@ -64,6 +69,27 @@ function Assets() {
     setShowModal(true);
   };
 
+  const openTagManager = async (asset) => {
+    setTagAsset(asset);
+    const tags = await tagsAPI.getByAsset(asset.id);
+    setAssetTags(tags);
+    setNewTag("");
+  };
+
+  const handleAddTag = async () => {
+    if (!newTag.trim() || !tagAsset) return;
+    await tagsAPI.add(tagAsset.id, newTag.trim());
+    const tags = await tagsAPI.getByAsset(tagAsset.id);
+    setAssetTags(tags);
+    setNewTag("");
+  };
+
+  const handleRemoveTag = async (tag) => {
+    await tagsAPI.remove(tagAsset.id, tag);
+    const tags = await tagsAPI.getByAsset(tagAsset.id);
+    setAssetTags(tags);
+  };
+
   const getTypeIcon = (type) => {
     switch (type) {
       case "domain": return <Globe size={16} />;
@@ -104,6 +130,9 @@ function Assets() {
           </select>
         </div>
         <div className="actions-group">
+          <a className="btn btn-secondary" href={exportAPI.assets()} download="assets.csv">
+            <Download size={18} /> Export CSV
+          </a>
           <button className="btn btn-primary" onClick={() => { setEditingAsset(null); setFormData({ name: "", type: "domain" }); setShowModal(true); }}>
             <Plus size={18} /> Add Asset
           </button>
@@ -153,6 +182,7 @@ function Assets() {
                       <td className="text-sm text-muted">{new Date(asset.created_at).toLocaleDateString()}</td>
                       <td>
                         <div className="flex gap-2">
+                          <button className="btn btn-sm btn-secondary" onClick={() => openTagManager(asset)} title="Manage tags"><Tag size={14} /></button>
                           <button className="btn btn-sm btn-secondary" onClick={() => handleEdit(asset)}><Edit size={14} /></button>
                           <button className="btn btn-sm btn-danger" onClick={() => handleDelete(asset.id)}><Trash2 size={14} /></button>
                         </div>
@@ -175,6 +205,40 @@ function Assets() {
           </>
         )}
       </div>
+
+      {/* Tag manager modal */}
+      {tagAsset && (
+        <div className="modal-overlay" onClick={() => setTagAsset(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: "420px" }}>
+            <div className="modal-header">
+              <h3 className="modal-title"><Tag size={16} /> Tags for {tagAsset.name}</h3>
+              <button className="btn btn-sm btn-secondary" onClick={() => setTagAsset(null)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem", minHeight: "2rem" }}>
+                {assetTags.length === 0 && <span className="text-muted" style={{ fontSize: "0.85rem" }}>No tags yet.</span>}
+                {assetTags.map(t => (
+                  <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", background: "#e0e7ff", color: "#4338ca", borderRadius: "4px", padding: "2px 8px", fontSize: "0.8rem" }}>
+                    {t}
+                    <X size={12} style={{ cursor: "pointer" }} onClick={() => handleRemoveTag(t)} />
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input
+                  className="form-input"
+                  placeholder="new-tag"
+                  value={newTag}
+                  onChange={e => setNewTag(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleAddTag()}
+                  style={{ flex: 1 }}
+                />
+                <button className="btn btn-primary" onClick={handleAddTag}>Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>

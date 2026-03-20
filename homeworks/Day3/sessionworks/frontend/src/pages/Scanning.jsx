@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Activity } from "lucide-react";
+import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Activity, Zap } from "lucide-react";
 import { assetsAPI, scanningAPI } from "../services/api";
 
 const SCAN_TYPES = [
-  { value: "dns",       label: "DNS Records",           passive: true },
-  { value: "whois",     label: "WHOIS Lookup",          passive: true },
-  { value: "subdomain", label: "Subdomain Enumeration", passive: true },
-  { value: "ip",        label: "IP Geolocation & ASN",  passive: true },
+  { value: "all",       label: "All Passive Scans",     passive: true  },
+  { value: "dns",       label: "DNS Records",           passive: true  },
+  { value: "whois",     label: "WHOIS Lookup",          passive: true  },
+  { value: "subdomain", label: "Subdomain Enumeration", passive: true  },
+  { value: "cert_trans",label: "Certificate Transparency", passive: true },
+  { value: "ip",        label: "IP Geolocation & ASN",  passive: true  },
   { value: "ssl",       label: "⚡ SSL/TLS Probe",      passive: false },
   { value: "tech",      label: "⚡ Tech Detection",     passive: false },
   { value: "port",      label: "⚡ Port Scan",          passive: false },
@@ -19,6 +21,7 @@ function Scanning() {
   const [scanJobs, setScanJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [demoing, setDemoing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -51,6 +54,22 @@ function Scanning() {
       console.error("Failed to load scan jobs:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDemo = async () => {
+    if (!selectedAsset) return;
+    try {
+      setDemoing(true);
+      setError("");
+      setSuccess("");
+      await scanningAPI.demoSyncVsAsync(selectedAsset);
+      setSuccess("Demo complete! Check the server console for the sync vs async timing comparison.");
+      setTimeout(() => setSuccess(""), 6000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDemoing(false);
     }
   };
 
@@ -150,6 +169,17 @@ function Scanning() {
                 {scanning ? <><RefreshCw size={18} className="animate-spin" /> Starting...</> : <><Play size={18} /> Start Scan</>}
               </button>
 
+              <button
+                className="btn btn-secondary w-full mt-2"
+                onClick={handleDemo}
+                disabled={demoing || !selectedAsset}
+                title="Run DNS + WHOIS + Subdomain scans twice (sync then async) and compare timings in the server console"
+              >
+                {demoing
+                  ? <><RefreshCw size={18} className="animate-spin" /> Running demo...</>
+                  : <><Zap size={18} /> Demo: Sync vs Async</>}
+              </button>
+
               {selectedAssetData && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-md">
                   <h4 className="font-semibold text-sm mb-2">Target Details:</h4>
@@ -172,9 +202,11 @@ function Scanning() {
             <div>
               <h4 className="font-semibold text-sm mb-2">🔍 Passive Scans (Safe)</h4>
               <ul className="text-sm text-muted space-y-1" style={{ listStyle: "disc", paddingLeft: "1.5rem" }}>
+                <li><strong>All:</strong> Run DNS + WHOIS + Subdomain together</li>
                 <li><strong>DNS:</strong> Query public DNS records</li>
                 <li><strong>WHOIS:</strong> Domain registration lookup</li>
                 <li><strong>Subdomain:</strong> Enumerate subdomains via bruteforce</li>
+                <li><strong>Cert Transparency:</strong> CT log search</li>
                 <li><strong>IP:</strong> Geolocation and ASN information</li>
               </ul>
             </div>
@@ -185,6 +217,13 @@ function Scanning() {
                 <li><strong>SSL:</strong> TLS certificate and cipher analysis</li>
                 <li><strong>Tech:</strong> Technology and framework detection</li>
               </ul>
+            </div>
+            <div className="pt-3 border-t">
+              <h4 className="font-semibold text-sm mb-2">⚡ Demo: Sync vs Async</h4>
+              <p className="text-sm text-muted">
+                Runs all passive scans twice — sequentially then concurrently — and
+                prints a side-by-side timing comparison in the server console.
+              </p>
             </div>
           </div>
         </div>

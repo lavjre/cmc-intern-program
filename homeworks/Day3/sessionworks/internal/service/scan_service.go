@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"mini-asm/internal/model"
@@ -92,13 +93,14 @@ func (s *ScanService) performScan(asset *model.Asset, job *model.ScanJob) {
 	// Perform scan based on type
 	var err error
 	switch job.ScanType {
+	case model.ScanTypeAll:
+		err = s.performAllScans(asset, job)
 	case model.ScanTypeDNS:
 		err = s.performDNSScan(asset, job)
 	case model.ScanTypeWHOIS:
 		err = s.performWHOISScan(asset, job)
 	case model.ScanTypeSubdomain:
 		err = s.performSubdomainScan(asset, job)
-	//bai1
 	case model.ScanTypeIP:
 		err = s.performIPScan(asset, job)
 	case model.ScanTypePort:
@@ -385,6 +387,221 @@ func (s *ScanService) GetAssetResults(assetID string) (map[string]interface{}, e
 	}
 
 	return results, nil
+}
+
+// performAllScans runs DNS + WHOIS + subdomain sequentially (used in production path).
+// Each sub-scan failure is tolerated — the job ends as partial if some fail.
+func (s *ScanService) performAllScans(asset *model.Asset, job *model.ScanJob) error {
+	total := 0
+	var errs []string
+
+	if err := s.performDNSScan(asset, job); err != nil {
+		errs = append(errs, fmt.Sprintf("DNS: %v", err))
+	} else {
+		total += job.Results
+	}
+	job.Results = 0
+
+	if err := s.performWHOISScan(asset, job); err != nil {
+		errs = append(errs, fmt.Sprintf("WHOIS: %v", err))
+	} else {
+		total += job.Results
+	}
+	job.Results = 0
+
+	if err := s.performSubdomainScan(asset, job); err != nil {
+		errs = append(errs, fmt.Sprintf("Subdomain: %v", err))
+	} else {
+		total += job.Results
+	}
+
+	job.Results = total
+
+	if len(errs) == 3 {
+		return fmt.Errorf("all passive scans failed: %v", errs)
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("some passive scans failed: %v", errs)
+	}
+	return nil
+}
+
+// performAllScansSync runs DNS + WHOIS + subdomain one-after-another, printing
+// individual timings to the server log.  Teaching comparison — synchronous approach.
+func (s *ScanService) performAllScansSync(asset *model.Asset, job *model.ScanJob) error {
+	total := 0
+	var errs []string
+
+	fmt.Printf("[SYNC] starting sequential scans for %s\n", asset.Name)
+	start := time.Now()
+
+	for _, run := range []struct {
+		name string
+		fn   func(*model.Asset, *model.ScanJob) error
+	}{
+		{"DNS", s.performDNSScan},
+		{"WHOIS", s.performWHOISScan},
+		{"Subdomain", s.performSubdomainScan},
+	} {
+		t := time.Now()
+		if err := run.fn(asset, job); err != nil {
+			errs = append(errs, fmt.Sprintf("%s: %v", run.name, err))
+			fmt.Printf("[SYNC]   ✗ %s failed in %v\n", run.name, time.Since(t))
+		} else {
+			fmt.Printf("[SYNC]   ✓ %s done in %v (%d results)\n", run.name, time.Since(t), job.Results)
+			total += job.Results
+		}
+		job.Results = 0
+	}
+
+	job.Results = total
+	fmt.Printf("[SYNC] total time: %v  results: %d\n", time.Since(start), total)
+
+	if len(errs) == 3 {
+		return fmt.Errorf("all scans failed: %v", errs)
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("some scans failed: %v", errs)
+	}
+	return nil
+}
+
+// performAllScansAsync runs DNS + WHOIS + subdomain concurrently using goroutines
+// and a result channel.  Teaching comparison — asynchronous / concurrent approach.
+func (s *ScanService) performAllScansAsync(asset *model.Asset, job *model.ScanJob) error {
+	type result struct {
+		name    string
+		count   int
+		elapsed time.Duration
+		err     error
+	}
+
+	fmt.Printf("[ASYNC] starting concurrent scans for %s\n", asset.Name)
+	start := time.Now()
+
+	resultCh := make(chan result, 3)
+	var wg sync.WaitGroup
+
+	launch := func(name string, fn func(*model.Asset, *model.ScanJob) error) {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			t := time.Now()
+			tmp := &model.ScanJob{ID: job.ID, AssetID: asset.ID, CreatedAt: job.CreatedAt}
+			err := fn(asset, tmp)
+			resultCh <- result{name: name, count: tmp.Results, elapsed: time.Since(t), err: err}
+		}()
+	}
+
+	launch("DNS", s.performDNSScan)
+	launch("WHOIS", s.performWHOISScan)
+	launch("Subdomain", s.performSubdomainScan)
+
+	go func() { wg.Wait(); close(resultCh) }()
+
+	var mu sync.Mutex
+	total := 0
+	var errs []string
+
+	for r := range resultCh {
+		if r.err != nil {
+			fmt.Printf("[ASYNC]   ✗ %s failed in %v: %v\n", r.name, r.elapsed, r.err)
+			mu.Lock()
+			errs = append(errs, fmt.Sprintf("%s: %v", r.name, r.err))
+			mu.Unlock()
+		} else {
+			fmt.Printf("[ASYNC]   ✓ %s done in %v (%d results)\n", r.name, r.elapsed, r.count)
+			mu.Lock()
+			total += r.count
+			mu.Unlock()
+		}
+	}
+
+	job.Results = total
+	fmt.Printf("[ASYNC] total time: %v  results: %d\n", time.Since(start), total)
+
+	if len(errs) == 3 {
+		return fmt.Errorf("all scans failed: %v", errs)
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("some scans failed: %v", errs)
+	}
+	return nil
+}
+
+// DemoSyncVsAsync runs the same passive scans twice — once sequentially, once
+// concurrently — and prints a side-by-side timing comparison to the server log.
+func (s *ScanService) DemoSyncVsAsync(assetID string) error {
+	asset, err := s.storage.GetByID(assetID)
+	if err != nil {
+		return fmt.Errorf("asset not found: %w", err)
+	}
+
+	now := time.Now()
+	make := func(t model.ScanType) *model.ScanJob {
+		j := &model.ScanJob{
+			ID: uuid.New().String(), AssetID: assetID,
+			ScanType: t, Status: model.ScanStatusRunning,
+			StartedAt: now, CreatedAt: now,
+		}
+		_ = s.scanStorage.CreateScanJob(j)
+		return j
+	}
+
+	fmt.Println("╔══════════════════════════════════════╗")
+	fmt.Println("║     SYNC vs ASYNC COMPARISON          ║")
+	fmt.Println("╚══════════════════════════════════════╝")
+
+	syncJob := make(model.ScanTypeAll)
+	syncStart := time.Now()
+	syncErr := s.performAllScansSync(asset, syncJob)
+	syncElapsed := time.Since(syncStart)
+	end := time.Now()
+	syncJob.EndedAt = &end
+	if syncErr != nil {
+		syncJob.Status = model.ScanStatusFailed
+		syncJob.Error = syncErr.Error()
+	} else {
+		syncJob.Status = model.ScanStatusCompleted
+	}
+	_ = s.scanStorage.UpdateScanJob(syncJob)
+
+	asyncJob := make(model.ScanTypeAll)
+	asyncStart := time.Now()
+	asyncErr := s.performAllScansAsync(asset, asyncJob)
+	asyncElapsed := time.Since(asyncStart)
+	end2 := time.Now()
+	asyncJob.EndedAt = &end2
+	if asyncErr != nil {
+		asyncJob.Status = model.ScanStatusFailed
+		asyncJob.Error = asyncErr.Error()
+	} else {
+		asyncJob.Status = model.ScanStatusCompleted
+	}
+	_ = s.scanStorage.UpdateScanJob(asyncJob)
+
+	fmt.Printf("\n[RESULT] SYNC  total=%v  results=%d\n", syncElapsed, syncJob.Results)
+	fmt.Printf("[RESULT] ASYNC total=%v  results=%d\n", asyncElapsed, asyncJob.Results)
+	fmt.Printf("[RESULT] Speedup: %.2fx\n\n", float64(syncElapsed)/float64(asyncElapsed))
+	return nil
+}
+
+// GetAssetAllScanResults returns the combined passive scan results (DNS, WHOIS, subdomains)
+// for an asset, matching the session6 reference API contract.
+func (s *ScanService) GetAssetAllScanResults(assetID string) (map[string]interface{}, error) {
+	if _, err := s.storage.GetByID(assetID); err != nil {
+		return nil, fmt.Errorf("asset not found: %w", err)
+	}
+
+	dnsRecords, _ := s.scanStorage.GetDNSRecordsByAsset(assetID)
+	whoisRecord, _ := s.scanStorage.GetWHOISRecordByAsset(assetID)
+	subdomains, _ := s.scanStorage.GetSubdomainsByAsset(assetID)
+
+	return map[string]interface{}{
+		"dns_records":   dnsRecords,
+		"whois_records": whoisRecord,
+		"subdomains":    subdomains,
+	}, nil
 }
 
 /*

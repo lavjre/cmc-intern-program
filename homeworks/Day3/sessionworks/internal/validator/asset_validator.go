@@ -134,6 +134,11 @@ func (v *AssetValidator) ValidateDomain(domain string) error {
 		return errors.New("domain length must be between 1 and 253 characters")
 	}
 
+	// Reject plain IP addresses — those belong to TypeIP
+	if net.ParseIP(domain) != nil {
+		return errors.New("value is an IP address, not a domain name")
+	}
+
 	// Check for valid domain format
 	// RFC 1035: labels must be 1-63 characters, only alphanumeric and hyphens
 	domainRegex := regexp.MustCompile(`^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$`)

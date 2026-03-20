@@ -13,6 +13,15 @@ type ScanHandler struct {
 	scanService *service.ScanService
 }
 
+// PaginatedScanResults wraps any scan result slice with pagination metadata.
+type PaginatedScanResults struct {
+	Data       interface{} `json:"data"`
+	Total      int         `json:"total"`
+	Page       int         `json:"page"`
+	PageSize   int         `json:"page_size"`
+	TotalPages int         `json:"total_pages"`
+}
+
 // NewScanHandler creates a new scan handler
 func NewScanHandler(scanService *service.ScanService) *ScanHandler {
 	return &ScanHandler{
@@ -83,7 +92,7 @@ func (h *ScanHandler) GetScanResults(w http.ResponseWriter, r *http.Request) {
 }
 
 // ListScanJobs retrieves all scan jobs for an asset
-// GET /assets/{id}/scans
+// GET /assets/{id}/scans?page=1&page_size=20&scan_type=dns&status=completed
 func (h *ScanHandler) ListScanJobs(w http.ResponseWriter, r *http.Request) {
 	assetID := r.PathValue("id")
 	if assetID == "" {
@@ -91,17 +100,36 @@ func (h *ScanHandler) ListScanJobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page := parseIntParam(r, "page", 1)
+	pageSize := parseIntParam(r, "page_size", 20)
+	filterType := r.URL.Query().Get("scan_type")
+	filterStatus := r.URL.Query().Get("status")
+
 	jobs, err := h.scanService.ListScanJobs(assetID)
 	if err != nil {
 		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	respondJSON(w, http.StatusOK, jobs)
+	if filterType != "" || filterStatus != "" {
+		filtered := make([]*model.ScanJob, 0, len(jobs))
+		for _, j := range jobs {
+			if filterType != "" && string(j.ScanType) != filterType {
+				continue
+			}
+			if filterStatus != "" && string(j.Status) != filterStatus {
+				continue
+			}
+			filtered = append(filtered, j)
+		}
+		jobs = filtered
+	}
+
+	respondJSON(w, http.StatusOK, paginateScanJobs(jobs, page, pageSize))
 }
 
 // GetAssetSubdomains retrieves all subdomains for an asset
-// GET /assets/{id}/subdomains
+// GET /assets/{id}/subdomains?page=1&page_size=20
 func (h *ScanHandler) GetAssetSubdomains(w http.ResponseWriter, r *http.Request) {
 	assetID := r.PathValue("id")
 	if assetID == "" {
@@ -109,17 +137,20 @@ func (h *ScanHandler) GetAssetSubdomains(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	page := parseIntParam(r, "page", 1)
+	pageSize := parseIntParam(r, "page_size", 20)
+
 	subdomains, err := h.scanService.GetAssetSubdomains(assetID)
 	if err != nil {
 		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	respondJSON(w, http.StatusOK, subdomains)
+	respondJSON(w, http.StatusOK, paginateSubdomains(subdomains, page, pageSize))
 }
 
 // GetAssetDNS retrieves all DNS records for an asset
-// GET /assets/{id}/dns
+// GET /assets/{id}/dns?page=1&page_size=20&record_type=A
 func (h *ScanHandler) GetAssetDNS(w http.ResponseWriter, r *http.Request) {
 	assetID := r.PathValue("id")
 	if assetID == "" {
@@ -127,13 +158,27 @@ func (h *ScanHandler) GetAssetDNS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page := parseIntParam(r, "page", 1)
+	pageSize := parseIntParam(r, "page_size", 20)
+	recordType := r.URL.Query().Get("record_type")
+
 	records, err := h.scanService.GetAssetDNSRecords(assetID)
 	if err != nil {
 		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	respondJSON(w, http.StatusOK, records)
+	if recordType != "" {
+		filtered := make([]*model.DNSRecord, 0, len(records))
+		for _, rec := range records {
+			if rec.RecordType == recordType {
+				filtered = append(filtered, rec)
+			}
+		}
+		records = filtered
+	}
+
+	respondJSON(w, http.StatusOK, paginateDNSRecords(records, page, pageSize))
 }
 
 // GetAssetWHOIS retrieves WHOIS information for an asset
@@ -216,6 +261,69 @@ func (h *ScanHandler) GetAssetTechScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondJSON(w, http.StatusOK, results)
+}
+
+// DemoSyncVsAsync runs a side-by-side sync vs. async scan comparison on the server console.
+// POST /assets/{id}/scan/demo
+func (h *ScanHandler) DemoSyncVsAsync(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
+		return
+	}
+
+	if err := h.scanService.DemoSyncVsAsync(assetID); err != nil {
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	respondJSON(w, http.StatusOK, map[string]string{
+		"message": "Demo completed! Check server console for detailed output.",
+		"note":    "Demonstrates sync (sequential) vs async (concurrent) scan performance.",
+	})
+}
+
+// ── Pagination helpers ────────────────────────────────────────────────────────
+
+func paginate[T any](items []T, page, pageSize int) PaginatedScanResults {
+	total := len(items)
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	if page <= 0 {
+		page = 1
+	}
+	start := (page - 1) * pageSize
+	if start > total {
+		start = total
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	totalPages := (total + pageSize - 1) / pageSize
+	if totalPages == 0 {
+		totalPages = 1
+	}
+	return PaginatedScanResults{
+		Data:       items[start:end],
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: totalPages,
+	}
+}
+
+func paginateScanJobs(items []*model.ScanJob, page, pageSize int) PaginatedScanResults {
+	return paginate(items, page, pageSize)
+}
+
+func paginateSubdomains(items []*model.Subdomain, page, pageSize int) PaginatedScanResults {
+	return paginate(items, page, pageSize)
+}
+
+func paginateDNSRecords(items []*model.DNSRecord, page, pageSize int) PaginatedScanResults {
+	return paginate(items, page, pageSize)
 }
 
 func (h *ScanHandler) GetAssetResults(w http.ResponseWriter, r *http.Request) {
