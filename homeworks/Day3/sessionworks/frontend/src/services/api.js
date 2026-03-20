@@ -86,6 +86,22 @@ export const resultsAPI = {
     const response = await api.get(`/assets/${assetId}/whois`);
     return response.data;
   },
+  getIP: async (assetId) => {
+    const response = await api.get(`/assets/${assetId}/ip`);
+    return Array.isArray(response.data) ? response.data : [];
+  },
+  getPorts: async (assetId) => {
+    const response = await api.get(`/assets/${assetId}/ports`);
+    return Array.isArray(response.data) ? response.data : [];
+  },
+  getSSL: async (assetId) => {
+    const response = await api.get(`/assets/${assetId}/ssl`);
+    return Array.isArray(response.data) ? response.data : [];
+  },
+  getTech: async (assetId) => {
+    const response = await api.get(`/assets/${assetId}/tech`);
+    return Array.isArray(response.data) ? response.data : [];
+  },
 };
 
 // ── Error interceptor ────────────────────────────────────────────────────────

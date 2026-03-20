@@ -323,6 +323,26 @@ func (s *ScanService) GetAssetSubdomains(assetID string) ([]*model.Subdomain, er
 	return s.scanStorage.GetSubdomainsByAsset(assetID)
 }
 
+// GetAssetIPResults retrieves all IP scan results for an asset
+func (s *ScanService) GetAssetIPResults(assetID string) ([]*model.IPScanResult, error) {
+	return s.scanStorage.GetIPScanResultsByAsset(assetID)
+}
+
+// GetAssetPortResults retrieves all port scan results for an asset
+func (s *ScanService) GetAssetPortResults(assetID string) ([]*model.PortScanResult, error) {
+	return s.scanStorage.GetPortScanResultsByAsset(assetID)
+}
+
+// GetAssetSSLResults retrieves all SSL scan results for an asset
+func (s *ScanService) GetAssetSSLResults(assetID string) ([]*model.SSLScanResult, error) {
+	return s.scanStorage.GetSSLScanResultsByAsset(assetID)
+}
+
+// GetAssetTechResults retrieves all tech scan results for an asset
+func (s *ScanService) GetAssetTechResults(assetID string) ([]*model.TechScanResult, error) {
+	return s.scanStorage.GetTechScanResultsByAsset(assetID)
+}
+
 // GetAssetDNSRecords retrieves all DNS records for an asset
 func (s *ScanService) GetAssetDNSRecords(assetID string) ([]*model.DNSRecord, error) {
 	return s.scanStorage.GetDNSRecordsByAsset(assetID)

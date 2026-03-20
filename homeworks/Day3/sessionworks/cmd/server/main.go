@@ -78,6 +78,10 @@ func main() {
 	mux.HandleFunc("GET /assets/{id}/subdomains", scanHandler.GetAssetSubdomains)
 	mux.HandleFunc("GET /assets/{id}/dns", scanHandler.GetAssetDNS)
 	mux.HandleFunc("GET /assets/{id}/whois", scanHandler.GetAssetWHOIS)
+	mux.HandleFunc("GET /assets/{id}/ip", scanHandler.GetAssetIPScan)
+	mux.HandleFunc("GET /assets/{id}/ports", scanHandler.GetAssetPortScan)
+	mux.HandleFunc("GET /assets/{id}/ssl", scanHandler.GetAssetSSLScan)
+	mux.HandleFunc("GET /assets/{id}/tech", scanHandler.GetAssetTechScan)
 	//bai1
 	mux.HandleFunc("GET /assets/{id}/results", scanHandler.GetAssetResults)
 

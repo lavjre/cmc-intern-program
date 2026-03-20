@@ -154,6 +154,70 @@ func (h *ScanHandler) GetAssetWHOIS(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, record)
 }
 
+// GetAssetIPScan retrieves IP scan results for an asset
+// GET /assets/{id}/ip
+func (h *ScanHandler) GetAssetIPScan(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
+		return
+	}
+	results, err := h.scanService.GetAssetIPResults(assetID)
+	if err != nil {
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
+		return
+	}
+	respondJSON(w, http.StatusOK, results)
+}
+
+// GetAssetPortScan retrieves port scan results for an asset
+// GET /assets/{id}/ports
+func (h *ScanHandler) GetAssetPortScan(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
+		return
+	}
+	results, err := h.scanService.GetAssetPortResults(assetID)
+	if err != nil {
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
+		return
+	}
+	respondJSON(w, http.StatusOK, results)
+}
+
+// GetAssetSSLScan retrieves SSL scan results for an asset
+// GET /assets/{id}/ssl
+func (h *ScanHandler) GetAssetSSLScan(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
+		return
+	}
+	results, err := h.scanService.GetAssetSSLResults(assetID)
+	if err != nil {
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
+		return
+	}
+	respondJSON(w, http.StatusOK, results)
+}
+
+// GetAssetTechScan retrieves tech detection results for an asset
+// GET /assets/{id}/tech
+func (h *ScanHandler) GetAssetTechScan(w http.ResponseWriter, r *http.Request) {
+	assetID := r.PathValue("id")
+	if assetID == "" {
+		respondJSON(w, http.StatusBadRequest, ErrorResponse{Error: "asset ID required"})
+		return
+	}
+	results, err := h.scanService.GetAssetTechResults(assetID)
+	if err != nil {
+		respondJSON(w, mapErrorToStatus(err), ErrorResponse{Error: err.Error()})
+		return
+	}
+	respondJSON(w, http.StatusOK, results)
+}
+
 func (h *ScanHandler) GetAssetResults(w http.ResponseWriter, r *http.Request) {
 	assetID := r.PathValue("id")
 	if assetID == "" {
