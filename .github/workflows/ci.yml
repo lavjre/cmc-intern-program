@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, homework]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homeworks/Day3/sessionworks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Download dependencies
+        run: go mod tidy
+
+      - name: Run tests with coverage
+        run: go test -v -cover ./internal/model/test/ ./internal/scanner/ ./internal/validator/
+
+      - name: Check build
+        run: go build ./cmd/server
+
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homeworks/Day3/sessionworks/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: homeworks/Day3/sessionworks/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+  security-gosec:
+    name: Security - Gosec
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homeworks/Day3/sessionworks
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Install Gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: Run Gosec security scan
+        run: gosec -fmt=json -out=gosec-results.json ./... || true
+
+      - name: Display results
+        run: cat gosec-results.json | python3 -m json.tool || true
+
+  security-gitleaks:
+    name: Security - Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
