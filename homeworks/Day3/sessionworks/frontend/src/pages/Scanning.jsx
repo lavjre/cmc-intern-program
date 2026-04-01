@@ -1,0 +1,288 @@
+import { useState, useEffect } from "react";
+import { Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Activity, Zap } from "lucide-react";
+import { assetsAPI, scanningAPI } from "../services/api";
+
+const SCAN_TYPES = [
+  { value: "all",       label: "All Passive Scans",     passive: true  },
+  { value: "dns",       label: "DNS Records",           passive: true  },
+  { value: "whois",     label: "WHOIS Lookup",          passive: true  },
+  { value: "subdomain", label: "Subdomain Enumeration", passive: true  },
+  { value: "cert_trans",label: "Certificate Transparency", passive: true },
+  { value: "ip",        label: "IP Geolocation & ASN",  passive: true  },
+  { value: "ssl",       label: "⚡ SSL/TLS Probe",      passive: false },
+  { value: "tech",      label: "⚡ Tech Detection",     passive: false },
+  { value: "port",      label: "⚡ Port Scan",          passive: false },
+];
+
+function Scanning() {
+  const [assets, setAssets] = useState([]);
+  const [selectedAsset, setSelectedAsset] = useState("");
+  const [selectedScanType, setSelectedScanType] = useState("dns");
+  const [scanJobs, setScanJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [demoing, setDemoing] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => { loadAssets(); }, []);
+
+  useEffect(() => {
+    if (!selectedAsset) return;
+    loadScanJobs();
+    const interval = setInterval(loadScanJobs, 5000);
+    return () => clearInterval(interval);
+  }, [selectedAsset]);
+
+  const loadAssets = async () => {
+    try {
+      const data = await assetsAPI.list({ status: "active", page_size: 100 });
+      setAssets(data.data || []);
+      if (data.data && data.data.length > 0) setSelectedAsset(data.data[0].id);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const loadScanJobs = async () => {
+    if (!selectedAsset) return;
+    try {
+      setLoading(true);
+      const data = await scanningAPI.listJobs(selectedAsset);
+      setScanJobs(data.data || []);
+    } catch (err) {
+      console.error("Failed to load scan jobs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemo = async () => {
+    if (!selectedAsset) return;
+    try {
+      setDemoing(true);
+      setError("");
+      setSuccess("");
+      await scanningAPI.demoSyncVsAsync(selectedAsset);
+      setSuccess("Demo complete! Check the server console for the sync vs async timing comparison.");
+      setTimeout(() => setSuccess(""), 6000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDemoing(false);
+    }
+  };
+
+  const handleStartScan = async () => {
+    if (!selectedAsset || !selectedScanType) return;
+    const scanType = SCAN_TYPES.find((t) => t.value === selectedScanType);
+    if (!scanType.passive) {
+      const confirmed = window.confirm(
+        "⚠️ WARNING: You are about to start an ACTIVE scan.\n\n" +
+        "Active scans directly probe target systems and may be illegal without authorization.\n\n" +
+        "Only proceed if you own the target or have written permission.\n\nContinue?"
+      );
+      if (!confirmed) return;
+    }
+    try {
+      setScanning(true);
+      setError("");
+      setSuccess("");
+      await scanningAPI.startScan(selectedAsset, selectedScanType);
+      setSuccess("Scan started successfully!");
+      setTimeout(() => { loadScanJobs(); setSuccess(""); }, 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "pending":   return <Clock size={16} className="status-pending" />;
+      case "running":   return <RefreshCw size={16} className="status-running" />;
+      case "completed": return <CheckCircle size={16} className="status-completed" />;
+      case "failed":    return <XCircle size={16} className="status-failed" />;
+      case "partial":   return <AlertCircle size={16} className="status-warning" />;
+      default: return null;
+    }
+  };
+
+  const getStatusBadge = (status) => ({
+    pending: "badge-warning", running: "badge-info",
+    completed: "badge-success", failed: "badge-danger", partial: "badge-warning",
+  }[status] || "badge-secondary");
+
+  const selectedAssetData = assets.find((a) => a.id === selectedAsset);
+
+  return (
+    <div>
+      <div className="page-header">
+        <h1 className="page-title">Scanning Operations</h1>
+        <p className="page-description">Execute reconnaissance scans on your assets</p>
+      </div>
+
+      {error   && <div className="alert alert-error mb-4">{error}</div>}
+      {success && <div className="alert alert-success mb-4">{success}</div>}
+
+      <div className="grid grid-2">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Start New Scan</h3>
+          </div>
+
+          {assets.length === 0 ? (
+            <div className="empty-state">
+              <p className="text-muted">No active assets found. Please add assets first.</p>
+            </div>
+          ) : (
+            <>
+              <div className="form-group">
+                <label className="form-label">Select Asset</label>
+                <select className="form-select" value={selectedAsset} onChange={(e) => setSelectedAsset(e.target.value)}>
+                  {assets.map((a) => (
+                    <option key={a.id} value={a.id}>{a.name} ({a.type})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Scan Type</label>
+                <select className="form-select" value={selectedScanType} onChange={(e) => setSelectedScanType(e.target.value)}>
+                  {SCAN_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label} {t.passive ? "🔍" : "⚡"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {!SCAN_TYPES.find((t) => t.value === selectedScanType)?.passive && (
+                <div className="alert alert-warning mb-4">
+                  <strong>⚠️ Active Scan Warning:</strong> This scan directly probes the target and requires
+                  explicit authorization. Only proceed if you own the target or have written permission.
+                </div>
+              )}
+
+              <button className="btn btn-primary w-full" onClick={handleStartScan} disabled={scanning || !selectedAsset}>
+                {scanning ? <><RefreshCw size={18} className="animate-spin" /> Starting...</> : <><Play size={18} /> Start Scan</>}
+              </button>
+
+              <button
+                className="btn btn-secondary w-full mt-2"
+                onClick={handleDemo}
+                disabled={demoing || !selectedAsset}
+                title="Run DNS + WHOIS + Subdomain scans twice (sync then async) and compare timings in the server console"
+              >
+                {demoing
+                  ? <><RefreshCw size={18} className="animate-spin" /> Running demo...</>
+                  : <><Zap size={18} /> Demo: Sync vs Async</>}
+              </button>
+
+              {selectedAssetData && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                  <h4 className="font-semibold text-sm mb-2">Target Details:</h4>
+                  <div className="text-sm text-muted space-y-1">
+                    <p><strong>Name:</strong> {selectedAssetData.name}</p>
+                    <p><strong>Type:</strong> {selectedAssetData.type}</p>
+                    <p><strong>Status:</strong> {selectedAssetData.status}</p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Available Scan Types</h3>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <h4 className="font-semibold text-sm mb-2">🔍 Passive Scans (Safe)</h4>
+              <ul className="text-sm text-muted space-y-1" style={{ listStyle: "disc", paddingLeft: "1.5rem" }}>
+                <li><strong>All:</strong> Run DNS + WHOIS + Subdomain together</li>
+                <li><strong>DNS:</strong> Query public DNS records</li>
+                <li><strong>WHOIS:</strong> Domain registration lookup</li>
+                <li><strong>Subdomain:</strong> Enumerate subdomains via bruteforce</li>
+                <li><strong>Cert Transparency:</strong> CT log search</li>
+                <li><strong>IP:</strong> Geolocation and ASN information</li>
+              </ul>
+            </div>
+            <div className="pt-3 border-t">
+              <h4 className="font-semibold text-sm mb-2">⚡ Active Scans (Requires Permission)</h4>
+              <ul className="text-sm text-muted space-y-1" style={{ listStyle: "disc", paddingLeft: "1.5rem" }}>
+                <li><strong>Port:</strong> TCP port scanning (private IP only)</li>
+                <li><strong>SSL:</strong> TLS certificate and cipher analysis</li>
+                <li><strong>Tech:</strong> Technology and framework detection</li>
+              </ul>
+            </div>
+            <div className="pt-3 border-t">
+              <h4 className="font-semibold text-sm mb-2">⚡ Demo: Sync vs Async</h4>
+              <p className="text-sm text-muted">
+                Runs all passive scans twice — sequentially then concurrently — and
+                prints a side-by-side timing comparison in the server console.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card mt-4">
+        <div className="card-header flex items-center justify-between">
+          <h3 className="card-title">Recent Scan Jobs</h3>
+          {selectedAsset && (
+            <button className="btn btn-sm btn-secondary" onClick={loadScanJobs} disabled={loading}>
+              <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
+            </button>
+          )}
+        </div>
+
+        {loading && scanJobs.length === 0 ? (
+          <div className="loading"><div className="spinner"></div><span>Loading scan jobs...</span></div>
+        ) : scanJobs.length === 0 ? (
+          <div className="empty-state">
+            <Activity className="empty-state-icon" size={64} />
+            <h3 className="empty-state-title">No scans yet</h3>
+            <p className="empty-state-description">Start your first scan to see results here</p>
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Scan Type</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Duration</th>
+                  <th>Results</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scanJobs.map((job) => (
+                  <tr key={job.id}>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(job.status)}
+                        <span className="font-medium">{job.scan_type}</span>
+                      </div>
+                    </td>
+                    <td><span className={`badge ${getStatusBadge(job.status)}`}>{job.status}</span></td>
+                    <td className="text-sm text-muted">{new Date(job.started_at).toLocaleString()}</td>
+                    <td className="text-sm text-muted">
+                      {job.ended_at ? `${Math.round((new Date(job.ended_at) - new Date(job.started_at)) / 1000)}s` : "–"}
+                    </td>
+                    <td><span className="font-semibold">{job.results}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Scanning;

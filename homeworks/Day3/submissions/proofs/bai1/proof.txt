@@ -1,0 +1,895 @@
+PS C:\Users\Administrator> cd D:\workspace\cmc-intern-program\homeworks\Day3\sessionworks\
+PS D:\workspace\cmc-intern-program\homeworks\Day3\sessionworks> python .\test_api.py
+
+============================================================
+  Health Check
+  Status: 200
+============================================================
+{
+  "status": "ok",
+  "message": "Mini ASM service is running",
+  "uptime_seconds": 862150843200,
+  "timestamp": "2026-03-20T04:42:42.8314677+07:00"
+}
+
+============================================================
+  Create Domain Asset
+  Status: 201
+============================================================
+{
+  "id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+  "name": "google.com",
+  "type": "domain",
+  "status": "active",
+  "created_at": "2026-03-20T04:42:42.8347758+07:00",
+  "updated_at": "2026-03-20T04:42:42.8347758+07:00"
+}
+
+============================================================
+  Create IP Asset
+  Status: 201
+============================================================
+{
+  "id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+  "name": "127.0.0.1",
+  "type": "ip",
+  "status": "active",
+  "created_at": "2026-03-20T04:42:42.8419705+07:00",
+  "updated_at": "2026-03-20T04:42:42.8419705+07:00"
+}
+
+============================================================
+  Create Public IP Asset (for safety test)
+  Status: 201
+============================================================
+{
+  "id": "7d4d80ce-e70c-4b31-aee8-20f0f5ebd65b",
+  "name": "8.8.8.8",
+  "type": "ip",
+  "status": "active",
+  "created_at": "2026-03-20T04:42:42.848429+07:00",
+  "updated_at": "2026-03-20T04:42:42.848429+07:00"
+}
+
+============================================================
+  List Assets
+  Status: 200
+============================================================
+{
+  "data": [
+    {
+      "id": "7d4d80ce-e70c-4b31-aee8-20f0f5ebd65b",
+      "name": "8.8.8.8",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:42:42.848429Z",
+      "updated_at": "2026-03-20T04:42:42.848429Z"
+    },
+    {
+      "id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+      "name": "127.0.0.1",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:42:42.84197Z",
+      "updated_at": "2026-03-20T04:42:42.84197Z"
+    },
+    {
+      "id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "name": "google.com",
+      "type": "domain",
+      "status": "active",
+      "created_at": "2026-03-20T04:42:42.834776Z",
+      "updated_at": "2026-03-20T04:42:42.834776Z"
+    },
+    {
+      "id": "bdb21e01-c731-444e-b392-85687f34b250",
+      "name": "8.8.8.8",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:40:04.121216Z",
+      "updated_at": "2026-03-20T04:40:04.121216Z"
+    },
+    {
+      "id": "d492db38-e225-4dca-a26f-75ff637bbca6",
+      "name": "127.0.0.1",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:40:04.114983Z",
+      "updated_at": "2026-03-20T04:40:04.114983Z"
+    },
+    {
+      "id": "da9a24ce-4f94-47a6-8715-a2da84634a63",
+      "name": "google.com",
+      "type": "domain",
+      "status": "active",
+      "created_at": "2026-03-20T04:40:04.10173Z",
+      "updated_at": "2026-03-20T04:40:04.10173Z"
+    },
+    {
+      "id": "0c7bc338-7227-4516-9244-295a8fb8f5c2",
+      "name": "127.0.0.1",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:37:52.151748Z",
+      "updated_at": "2026-03-20T04:37:52.151748Z"
+    },
+    {
+      "id": "152bd7a6-ebfa-4f36-9a02-31e571b6ab89",
+      "name": "test-domain.com",
+      "type": "domain",
+      "status": "active",
+      "created_at": "2026-03-20T04:37:52.103482Z",
+      "updated_at": "2026-03-20T04:37:52.103482Z"
+    },
+    {
+      "id": "5214d5c9-1bdd-481b-bbf9-36b046d73f3d",
+      "name": "127.0.0.1",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:37:14.665479Z",
+      "updated_at": "2026-03-20T04:37:14.665479Z"
+    },
+    {
+      "id": "9d9ee524-06ef-46cf-b2f2-4adf093f6c22",
+      "name": "google.com",
+      "type": "domain",
+      "status": "active",
+      "created_at": "2026-03-20T04:37:08.241362Z",
+      "updated_at": "2026-03-20T04:37:08.241362Z"
+    },
+    {
+      "id": "b7b47fa2-59b4-438a-8c05-c8073bde338d",
+      "name": "google.com",
+      "type": "domain",
+      "status": "active",
+      "created_at": "2026-03-20T04:29:16.745261Z",
+      "updated_at": "2026-03-20T04:29:16.745261Z"
+    },
+    {
+      "id": "5a3121a1-ace7-4531-b32d-85571cc58090",
+      "name": "127.0.0.1",
+      "type": "ip",
+      "status": "active",
+      "created_at": "2026-03-20T04:28:28.172211Z",
+      "updated_at": "2026-03-20T04:28:28.172211Z"
+    }
+  ],
+  "total": 12,
+  "page": 1,
+  "page_size": 20,
+  "total_pages": 1
+}
+
+============================================================
+  Start DNS Scan
+  Status: 202
+============================================================
+{
+  "id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+  "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+  "scan_type": "dns",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:42.8592269+07:00",
+  "ended_at": "2026-03-20T04:42:43.0283498+07:00",
+  "error": "",
+  "results": 19,
+  "created_at": "2026-03-20T04:42:42.8592269+07:00"
+}
+
+============================================================
+  Start WHOIS Scan
+  Status: 202
+============================================================
+{
+  "id": "5e6de9c6-f6ba-44d6-8bf5-b8f2e112a93b",
+  "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+  "scan_type": "whois",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:43.0336803+07:00",
+  "ended_at": "2026-03-20T04:42:43.8645225+07:00",
+  "error": "",
+  "results": 1,
+  "created_at": "2026-03-20T04:42:43.0336803+07:00"
+}
+
+============================================================
+  Start IP Scan
+  Status: 202
+============================================================
+{
+  "id": "4eb5892f-3227-467b-85fa-3238d33371e8",
+  "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+  "scan_type": "ip",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:43.874806+07:00",
+  "ended_at": "2026-03-20T04:42:43.8796417+07:00",
+  "error": "",
+  "results": 1,
+  "created_at": "2026-03-20T04:42:43.874806+07:00"
+}
+
+============================================================
+  Start Port Scan (localhost)
+  Status: 202
+============================================================
+{
+  "id": "2621432d-2d1e-4bc8-b493-a870e0025a31",
+  "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+  "scan_type": "port",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:43.8872978+07:00",
+  "ended_at": "2026-03-20T04:42:43.8949241+07:00",
+  "error": "",
+  "results": 1,
+  "created_at": "2026-03-20T04:42:43.8872978+07:00"
+}
+
+============================================================
+  Start SSL Scan (bonus)
+  Status: 202
+============================================================
+{
+  "id": "11cb1d7f-ca52-4607-9f8e-09a42868a092",
+  "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+  "scan_type": "ssl",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:43.9074931+07:00",
+  "ended_at": "2026-03-20T04:42:44.0503057+07:00",
+  "error": "",
+  "results": 1,
+  "created_at": "2026-03-20T04:42:43.9074931+07:00"
+}
+
+============================================================
+  Start Tech Scan (bonus)
+  Status: 202
+============================================================
+{
+  "id": "31bc49b0-a20e-4b15-bdc3-3abbc8bbbe11",
+  "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+  "scan_type": "tech",
+  "status": "completed",
+  "started_at": "2026-03-20T04:42:44.0609524+07:00",
+  "ended_at": "2026-03-20T04:42:44.5170479+07:00",
+  "error": "",
+  "results": 1,
+  "created_at": "2026-03-20T04:42:44.0609524+07:00"
+}
+
+============================================================
+  Start Port Scan on PUBLIC IP (should fail later)
+  Status: 202
+============================================================
+{
+  "id": "278764a4-d4c5-4bf3-8895-5116d527675e",
+  "asset_id": "7d4d80ce-e70c-4b31-aee8-20f0f5ebd65b",
+  "scan_type": "port",
+  "status": "failed",
+  "started_at": "2026-03-20T04:42:44.5278097+07:00",
+  "ended_at": "2026-03-20T04:42:44.5358654+07:00",
+  "error": "Port scan failed: port scan blocked: 8.8.8.8 is not a private/loopback IP",
+  "results": 0,
+  "created_at": "2026-03-20T04:42:44.5278097+07:00"
+}
+
+
+Waiting 12 seconds for scans to complete...
+
+  [PASS] DNS Scan                       status=completed  results=19
+  [PASS] WHOIS Scan                     status=completed  results=1
+  [PASS] IP Scan                        status=completed  results=1
+  [PASS] Port Scan (localhost)          status=completed  results=1
+  [PASS] SSL Scan (bonus)               status=completed  results=1
+  [PASS] Tech Scan (bonus)              status=completed  results=1
+  [PASS] Port Scan PUBLIC IP            status=failed     error=Port scan failed: port scan blocked: 8.8.8.8 is not a private/loopback IP
+
+============================================================
+  Results: DNS Scan
+  Status: 200
+============================================================
+[
+  {
+    "id": "874d3f21-3252-45f7-83fd-4afa71912cc1",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.026566Z"
+  },
+  {
+    "id": "22c9f74f-392d-4b2d-824e-2c958263ce51",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "onetrust-domain-verification=6d685f1d41a94696ad7ef771f68993e0",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.025314Z"
+  },
+  {
+    "id": "45aea36d-38a0-4988-acb4-d68885192ee9",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "cisco-ci-domain-verification=47c38bc8c4b74b7233e9053220c1bbe76bcc1cd33c7acf7acd36cd6a5332004b",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.024231Z"
+  },
+  {
+    "id": "b3d39c53-e33c-488f-926d-e3c595bfba98",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "google-site-verification=wD8N7i1JTNTkezJ49swvWW48f8_9xveREV4oB-0Hf5o",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.022667Z"
+  },
+  {
+    "id": "981554af-b63e-4419-ae21-57ac561f4ab1",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "v=spf1 include:_spf.google.com ~all",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.022145Z"
+  },
+  {
+    "id": "62172681-0046-4000-8ff7-c63623b148ef",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "google-site-verification=TV9-DBe4R80X4v0M4U_bd_J9cpOJM0nikft0jAgjmsQ",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.018844Z"
+  },
+  {
+    "id": "8f3559b0-3d68-4b08-b8c9-b8d5dba32e06",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "google-site-verification=4ibFUgB-wXLQ_S7vsXVomSTVamuOXBiVAzpR5IZ87D0",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.017774Z"
+  },
+  {
+    "id": "59c149c5-72ee-4e42-839f-ec13935c722f",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "apple-domain-verification=30afIBcvSuDV2PLX",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.015745Z"
+  },
+  {
+    "id": "9d5d0549-97b8-497e-8bcf-fe8172b9e52e",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "MS=E4A68B9AB2BB9670BCE15412F62916164C0B20BB",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.015242Z"
+  },
+  {
+    "id": "6f83a2f7-5a7b-45a8-90dd-228a30466300",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "onetrust-domain-verification=0d477fe608074e6f9c12bca7826035cc",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.012476Z"
+  },
+  {
+    "id": "fd125ebd-f44d-4549-b0ab-3649903a899b",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8=",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.011221Z"
+  },
+  {
+    "id": "9f1cdd6d-28b2-4239-b9d8-da5bdbc93882",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "docusign=1b0a6754-49b1-4db5-8540-d2c12664b289",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.009974Z"
+  },
+  {
+    "id": "47629573-87a1-4d86-9cc5-e7729c3528de",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "TXT",
+    "name": "google.com",
+    "value": "docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.008619Z"
+  },
+  {
+    "id": "416c7239-23ac-4188-859f-2c6ec170448d",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "NS",
+    "name": "google.com",
+    "value": "ns3.google.com",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.007886Z"
+  },
+  {
+    "id": "0dc8847c-b296-44a0-ab58-d079de93a4d0",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "NS",
+    "name": "google.com",
+    "value": "ns2.google.com",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.00623Z"
+  },
+  {
+    "id": "e74d629e-2d79-4104-b939-fec2a6c0eb39",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "NS",
+    "name": "google.com",
+    "value": "ns1.google.com",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.003982Z"
+  },
+  {
+    "id": "e800c1cb-4e9a-4766-8f93-e88adbe37225",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "NS",
+    "name": "google.com",
+    "value": "ns4.google.com",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:43.00089Z"
+  },
+  {
+    "id": "544ce817-e453-4e8f-bee6-d48db0d0829a",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "MX",
+    "name": "google.com",
+    "value": "10 smtp.google.com",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:42.995656Z"
+  },
+  {
+    "id": "978e2d6b-6158-45ae-94f6-bddde9674be5",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "record_type": "A",
+    "name": "google.com",
+    "value": "142.250.198.174",
+    "ttl": 0,
+    "created_at": "2026-03-20T04:42:42.989072Z"
+  }
+]
+
+============================================================
+  Results: WHOIS Scan
+  Status: 200
+============================================================
+[
+  {
+    "id": "b77970a2-0e26-4dfe-b733-d0a66ed6bf58",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "5e6de9c6-f6ba-44d6-8bf5-b8f2e112a93b",
+    "registrar": "MarkMonitor Inc.",
+    "created_date": "1997-09-15T04:00:00Z",
+    "expiry_date": "2028-09-14T04:00:00Z",
+    "name_servers": "NS1.GOOGLE.COM,NS2.GOOGLE.COM,NS3.GOOGLE.COM,NS4.GOOGLE.COM",
+    "status": "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,clientTransferProhibited https://icann.org/epp#clientTransferProhibited,clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,serverTransferProhibited https://icann.org/epp#serverTransferProhibited,serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited,//icann.org/epp",
+    "emails": "",
+    "raw_data": "   Domain Name: GOOGLE.COM\n   Registry Domain ID: 2138514_DOMAIN_COM-VRSN\n   Registrar WHOIS Server: whois.markmonitor.com\n   Registrar URL: http://www.markmonitor.com\n   Updated Date: 2019-09-09T15:39:04Z\n   Creation Date: 1997-09-15T04:00:00Z\n   Registry Expiry Date: 2028-09-14T04:00:00Z\n   Registrar: MarkMonitor Inc.\n   Registrar IANA ID: 292\n   Registrar Abuse Contact Email: abusecomplaints@markmonitor.com\n   Registrar Abuse Contact Phone: +1.2086851750\n   Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\n   Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\n   Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited\n   Domain Status: serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited\n   Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited\n   Domain Status: serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited\n   Name Server: NS1.GOOGLE.COM\n   Name Server: NS2.GOOGLE.COM\n   Name Server: NS3.GOOGLE.COM\n   Name Server: NS4.GOOGLE.COM\n   DNSSEC: unsigned\n   URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/\n>>> Last update of whois database: 2026-03-19T21:42:32Z <<<\n\nFor more information on Whois status codes, please visit https://icann.org/epp\n\nNOTICE: The expiration date displayed in this record is the date the\nregistrar's sponsorship of the domain name registration in the registry is\ncurrently set to expire. This date does not necessarily reflect the expiration\ndate of the domain name registrant's agreement with the sponsoring\nregistrar.  Users may consult the sponsoring registrar's Whois database to\nview the registrar's reported date of expiration for this registration.\n\nTERMS OF USE: You are not authorized to access or query our Whois\ndatabase through the use of electronic processes that are high-volume and\nautomated except as reasonably necessary to register domain names or\nmodify existing registrations; the Data in VeriSign Global Registry\nServices' (\"VeriSign\") Whois database is provided by VeriSign for\ninformation purposes only, and to assist persons in obtaining information\nabout or related to a domain name registration record. VeriSign does not\nguarantee its accuracy. By submitting a Whois query, you agree to abide\nby the following terms of use: You agree that you may use this Data only\nfor lawful purposes and that under no circumstances will you use this Data\nto: (1) allow, enable, or otherwise support the transmission of mass\nunsolicited, commercial advertising or solicitations via e-mail, telephone,\nor facsimile; or (2) enable high volume, automated, electronic processes\nthat apply to VeriSign (or its computer systems). The compilation,\nrepackaging, dissemination or other use of this Data is expressly\nprohibited without the prior written consent of VeriSign. You agree not to\nuse electronic processes that are automated and high-volume to access or\nquery the Whois database except as reasonably necessary to register\ndomain names or modify existing registrations. VeriSign reserves the right\nto restrict your access to the Whois database in its sole discretion to ensure\noperational stability.  VeriSign may restrict or terminate your access to the\nWhois database for failure to abide by these terms of use. VeriSign\nreserves the right to modify these terms at any time.\n\nThe Registry database contains ONLY .COM, .NET, .EDU domains and\nRegistrars.\n",
+    "created_at": "2026-03-20T04:42:43.859319Z"
+  }
+]
+
+============================================================
+  Results: IP Scan
+  Status: 200
+============================================================
+[
+  {
+    "id": "fd45d393-2b41-446b-b283-428ba701cfdb",
+    "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+    "scan_job_id": "4eb5892f-3227-467b-85fa-3238d33371e8",
+    "ip_address": "127.0.0.1",
+    "geolocation": "{\"isp\": \"\", \"org\": \"\", \"city\": \"\", \"region\": \"\", \"country\": \"\", \"latitude\": 0, \"longitude\": 0, \"country_code\": \"\"}",
+    "asn": "{\"name\": \"\", \"number\": 0, \"description\": \"\"}",
+    "reverse_dns": "kubernetes.docker.internal",
+    "created_at": "2026-03-20T04:42:43.878363Z"
+  }
+]
+
+============================================================
+  Results: Port Scan (localhost)
+  Status: 200
+============================================================
+[
+  {
+    "id": "66135072-2683-4847-9262-99050c3185d3",
+    "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+    "scan_job_id": "2621432d-2d1e-4bc8-b493-a870e0025a31",
+    "ip_address": "127.0.0.1",
+    "open_ports": "[{\"port\": 5432, \"state\": \"open\", \"service\": \"postgresql\", \"version\": \"\", \"protocol\": \"tcp\"}, {\"port\": 8080, \"state\": \"open\", \"service\": \"http-alt\", \"version\": \"\", \"protocol\": \"tcp\"}]",
+    "closed_ports": 14,
+    "total_scanned": 16,
+    "scan_duration_ms": 3,
+    "created_at": "2026-03-20T04:42:43.892469Z"
+  }
+]
+
+============================================================
+  Results: SSL Scan (bonus)
+  Status: 200
+============================================================
+[
+  {
+    "id": "83c6d895-05fe-4884-9474-93cf696280cd",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "11cb1d7f-ca52-4607-9f8e-09a42868a092",
+    "domain": "google.com",
+    "certificate": "{\"san\": [\"*.google.com\", \"*.appengine.google.com\", \"*.bdn.dev\", \"*.origin-test.bdn.dev\", \"*.cloud.google.com\", \"*.crowdsource.google.com\", \"*.datacompute.google.com\", \"*.google.ca\", \"*.google.cl\", \"*.google.co.in\", \"*.google.co.jp\", \"*.google.co.uk\", \"*.google.com.ar\", \"*.google.com.au\", \"*.google.com.br\", \"*.google.com.co\", \"*.google.com.mx\", \"*.google.com.tr\", \"*.google.com.vn\", \"*.google.de\", \"*.google.es\", \"*.google.fr\", \"*.google.hu\", \"*.google.it\", \"*.google.nl\", \"*.google.pl\", \"*.google.pt\", \"*.googleapis.cn\", \"*.gstatic.cn\", \"*.gstatic-cn.com\", \"googlecnapps.cn\", \"*.googlecnapps.cn\", \"googleapps-cn.com\", \"*.googleapps-cn.com\", \"gkecnapps.cn\", \"*.gkecnapps.cn\", \"googledownloads.cn\", \"*.googledownloads.cn\", \"recaptcha.net.cn\", \"*.recaptcha.net.cn\", \"recaptcha-cn.net\", \"*.recaptcha-cn.net\", \"widevine.cn\", \"*.widevine.cn\", \"ampproject.org.cn\", \"*.ampproject.org.cn\", \"ampproject.net.cn\", \"*.ampproject.net.cn\", \"google-analytics-cn.com\", \"*.google-analytics-cn.com\", \"googleadservices-cn.com\", \"*.googleadservices-cn.com\", \"googlevads-cn.com\", \"*.googlevads-cn.com\", \"googleapis-cn.com\", \"*.googleapis-cn.com\", \"googleoptimize-cn.com\", \"*.googleoptimize-cn.com\", \"doubleclick-cn.net\", \"*.doubleclick-cn.net\", \"*.fls.doubleclick-cn.net\", \"*.g.doubleclick-cn.net\", \"doubleclick.cn\", \"*.doubleclick.cn\", \"*.fls.doubleclick.cn\", \"*.g.doubleclick.cn\", \"dartsearch-cn.net\", \"*.dartsearch-cn.net\", \"googletraveladservices-cn.com\", \"*.googletraveladservices-cn.com\", \"googletagservices-cn.com\", \"*.googletagservices-cn.com\", \"googletagmanager-cn.com\", \"*.googletagmanager-cn.com\", \"googlesyndication-cn.com\", \"*.googlesyndication-cn.com\", \"*.safeframe.googlesyndication-cn.com\", \"app-measurement-cn.com\", \"*.app-measurement-cn.com\", \"gvt1-cn.com\", \"*.gvt1-cn.com\", \"gvt2-cn.com\", \"*.gvt2-cn.com\", \"2mdn-cn.net\", \"*.2mdn-cn.net\", \"googleflights-cn.net\", \"*.googleflights-cn.net\", \"admob-cn.com\", \"*.admob-cn.com\", \"*.gemini.cloud.google.com\", \"googlesandbox-cn.com\", \"*.googlesandbox-cn.com\", \"*.safenup.googlesandbox-cn.com\", \"*.gstatic.com\", \"*.metric.gstatic.com\", \"*.gvt1.com\", \"*.gcpcdn.gvt1.com\", \"*.gvt2.com\", \"*.gcp.gvt2.com\", \"*.url.google.com\", \"*.youtube-nocookie.com\", \"*.ytimg.com\", \"ai.android\", \"android.com\", \"*.android.com\", \"*.flash.android.com\", \"g.cn\", \"*.g.cn\", \"g.co\", \"*.g.co\", \"goo.gl\", \"www.goo.gl\", \"google-analytics.com\", \"*.google-analytics.com\", \"google.com\", \"googlecommerce.com\", \"*.googlecommerce.com\", \"ggpht.cn\", \"*.ggpht.cn\", \"urchin.com\", \"*.urchin.com\", \"youtu.be\", \"youtube.com\", \"*.youtube.com\", \"music.youtube.com\", \"*.music.youtube.com\", \"youtubeeducation.com\", \"*.youtubeeducation.com\", \"youtubekids.com\", \"*.youtubekids.com\", \"yt.be\", \"*.yt.be\", \"android.clients.google.com\", \"*.android.google.cn\", \"*.chrome.google.cn\", \"*.developers.google.cn\", \"*.aistudio.google.com\"], \"issuer\": \"WE2\", \"subject\": \"*.google.com\", \"is_expired\": false, \"valid_from\": \"2026-02-23T18:19:56Z\", \"valid_until\": \"2026-05-18T18:19:55Z\", \"serial_number\": \"AA2302428EF4397E10BB2C32931CFC2E\", \"is_self_signed\": false, \"days_until_expiry\": 60}",
+    "connection": "{\"tls_version\": \"TLS 1.3\", \"cipher_suite\": \"TLS_AES_128_GCM_SHA256\"}",
+    "grade": "A",
+    "issues": "[]",
+    "created_at": "2026-03-20T04:42:44.045978Z"
+  }
+]
+
+============================================================
+  Results: Tech Scan (bonus)
+  Status: 200
+============================================================
+[
+  {
+    "id": "ca3857e2-5307-43be-afb6-a72baeae9058",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "31bc49b0-a20e-4b15-bdc3-3abbc8bbbe11",
+    "domain": "google.com",
+    "technologies": "[{\"name\": \"gws\", \"category\": \"Web Server\", \"confidence\": 100}]",
+    "headers": "{\"p3p\": \"CP=\\\"This is not a P3P policy! See g.co/p3phelp for more info.\\\"\", \"date\": \"Thu, 19 Mar 2026 21:42:43 GMT\", \"server\": \"gws\", \"alt-svc\": \"h3=\\\":443\\\"; ma=2592000,h3-29=\\\":443\\\"; ma=2592000\", \"expires\": \"-1\", \"accept-ch\": \"Sec-CH-Prefers-Color-Scheme\", \"set-cookie\": \"__Secure-STRP=AEEP7gK3JexvliSSA16cWLgOmXULSVO4NYkGm-fh7UjLBZcVjpm5PhZIQn_MidCcHXoDgtl0ksiFvRdSQ7HgJa83b7PClO4M-In-; expires=Thu, 19-Mar-2026 21:47:43 GMT; path=/; domain=.google.com; Secure; SameSite=strict\", \"content-type\": \"text/html; charset=ISO-8859-1\", \"cache-control\": \"private, max-age=0\", \"x-frame-options\": \"SAMEORIGIN\", \"x-xss-protection\": \"0\", \"reporting-endpoints\": \"default=\\\"//www.google.com/httpservice/retry/jserror?ei=0228aY-xMKbb1e8PtPPS-Qo&cad=crash&error=Page%20Crash&jsel=1&bver=2405&dpf=fb_MLKOoTA3-4Y_Ow459mQC2MZd4gBh9cVaBFyGoei0\\\"\", \"content-security-policy-report-only\": \"object-src 'none';base-uri 'self';script-src 'nonce--1pLLObVQi6ZZ2KRK4K_Lg' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp\"}",
+    "meta_tags": "{}",
+    "created_at": "2026-03-20T04:42:44.509745Z"
+  }
+]
+
+============================================================
+  ALL Results for Domain (aggregate)
+  Status: 200
+============================================================
+{
+  "dns_records": [
+    {
+      "id": "874d3f21-3252-45f7-83fd-4afa71912cc1",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "facebook-domain-verification=22rm551cu4k0ab0bxsw536tlds4h95",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.026566Z"
+    },
+    {
+      "id": "22c9f74f-392d-4b2d-824e-2c958263ce51",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "onetrust-domain-verification=6d685f1d41a94696ad7ef771f68993e0",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.025314Z"
+    },
+    {
+      "id": "45aea36d-38a0-4988-acb4-d68885192ee9",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "cisco-ci-domain-verification=47c38bc8c4b74b7233e9053220c1bbe76bcc1cd33c7acf7acd36cd6a5332004b",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.024231Z"
+    },
+    {
+      "id": "b3d39c53-e33c-488f-926d-e3c595bfba98",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "google-site-verification=wD8N7i1JTNTkezJ49swvWW48f8_9xveREV4oB-0Hf5o",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.022667Z"
+    },
+    {
+      "id": "981554af-b63e-4419-ae21-57ac561f4ab1",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "v=spf1 include:_spf.google.com ~all",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.022145Z"
+    },
+    {
+      "id": "62172681-0046-4000-8ff7-c63623b148ef",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "google-site-verification=TV9-DBe4R80X4v0M4U_bd_J9cpOJM0nikft0jAgjmsQ",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.018844Z"
+    },
+    {
+      "id": "8f3559b0-3d68-4b08-b8c9-b8d5dba32e06",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "google-site-verification=4ibFUgB-wXLQ_S7vsXVomSTVamuOXBiVAzpR5IZ87D0",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.017774Z"
+    },
+    {
+      "id": "59c149c5-72ee-4e42-839f-ec13935c722f",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "apple-domain-verification=30afIBcvSuDV2PLX",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.015745Z"
+    },
+    {
+      "id": "9d5d0549-97b8-497e-8bcf-fe8172b9e52e",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "MS=E4A68B9AB2BB9670BCE15412F62916164C0B20BB",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.015242Z"
+    },
+    {
+      "id": "6f83a2f7-5a7b-45a8-90dd-228a30466300",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "onetrust-domain-verification=0d477fe608074e6f9c12bca7826035cc",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.012476Z"
+    },
+    {
+      "id": "fd125ebd-f44d-4549-b0ab-3649903a899b",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "globalsign-smime-dv=CDYX+XFHUw2wml6/Gb8+59BsH31KzUr6c1l2BPvqKX8=",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.011221Z"
+    },
+    {
+      "id": "9f1cdd6d-28b2-4239-b9d8-da5bdbc93882",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "docusign=1b0a6754-49b1-4db5-8540-d2c12664b289",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.009974Z"
+    },
+    {
+      "id": "47629573-87a1-4d86-9cc5-e7729c3528de",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "TXT",
+      "name": "google.com",
+      "value": "docusign=05958488-4752-4ef2-95eb-aa7ba8a3bd0e",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.008619Z"
+    },
+    {
+      "id": "416c7239-23ac-4188-859f-2c6ec170448d",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "NS",
+      "name": "google.com",
+      "value": "ns3.google.com",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.007886Z"
+    },
+    {
+      "id": "0dc8847c-b296-44a0-ab58-d079de93a4d0",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "NS",
+      "name": "google.com",
+      "value": "ns2.google.com",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.00623Z"
+    },
+    {
+      "id": "e74d629e-2d79-4104-b939-fec2a6c0eb39",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "NS",
+      "name": "google.com",
+      "value": "ns1.google.com",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.003982Z"
+    },
+    {
+      "id": "e800c1cb-4e9a-4766-8f93-e88adbe37225",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "NS",
+      "name": "google.com",
+      "value": "ns4.google.com",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:43.00089Z"
+    },
+    {
+      "id": "544ce817-e453-4e8f-bee6-d48db0d0829a",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "MX",
+      "name": "google.com",
+      "value": "10 smtp.google.com",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:42.995656Z"
+    },
+    {
+      "id": "978e2d6b-6158-45ae-94f6-bddde9674be5",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+      "record_type": "A",
+      "name": "google.com",
+      "value": "142.250.198.174",
+      "ttl": 0,
+      "created_at": "2026-03-20T04:42:42.989072Z"
+    }
+  ],
+  "ssl_scan": [
+    {
+      "id": "83c6d895-05fe-4884-9474-93cf696280cd",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "11cb1d7f-ca52-4607-9f8e-09a42868a092",
+      "domain": "google.com",
+      "certificate": "{\"san\": [\"*.google.com\", \"*.appengine.google.com\", \"*.bdn.dev\", \"*.origin-test.bdn.dev\", \"*.cloud.google.com\", \"*.crowdsource.google.com\", \"*.datacompute.google.com\", \"*.google.ca\", \"*.google.cl\", \"*.google.co.in\", \"*.google.co.jp\", \"*.google.co.uk\", \"*.google.com.ar\", \"*.google.com.au\", \"*.google.com.br\", \"*.google.com.co\", \"*.google.com.mx\", \"*.google.com.tr\", \"*.google.com.vn\", \"*.google.de\", \"*.google.es\", \"*.google.fr\", \"*.google.hu\", \"*.google.it\", \"*.google.nl\", \"*.google.pl\", \"*.google.pt\", \"*.googleapis.cn\", \"*.gstatic.cn\", \"*.gstatic-cn.com\", \"googlecnapps.cn\", \"*.googlecnapps.cn\", \"googleapps-cn.com\", \"*.googleapps-cn.com\", \"gkecnapps.cn\", \"*.gkecnapps.cn\", \"googledownloads.cn\", \"*.googledownloads.cn\", \"recaptcha.net.cn\", \"*.recaptcha.net.cn\", \"recaptcha-cn.net\", \"*.recaptcha-cn.net\", \"widevine.cn\", \"*.widevine.cn\", \"ampproject.org.cn\", \"*.ampproject.org.cn\", \"ampproject.net.cn\", \"*.ampproject.net.cn\", \"google-analytics-cn.com\", \"*.google-analytics-cn.com\", \"googleadservices-cn.com\", \"*.googleadservices-cn.com\", \"googlevads-cn.com\", \"*.googlevads-cn.com\", \"googleapis-cn.com\", \"*.googleapis-cn.com\", \"googleoptimize-cn.com\", \"*.googleoptimize-cn.com\", \"doubleclick-cn.net\", \"*.doubleclick-cn.net\", \"*.fls.doubleclick-cn.net\", \"*.g.doubleclick-cn.net\", \"doubleclick.cn\", \"*.doubleclick.cn\", \"*.fls.doubleclick.cn\", \"*.g.doubleclick.cn\", \"dartsearch-cn.net\", \"*.dartsearch-cn.net\", \"googletraveladservices-cn.com\", \"*.googletraveladservices-cn.com\", \"googletagservices-cn.com\", \"*.googletagservices-cn.com\", \"googletagmanager-cn.com\", \"*.googletagmanager-cn.com\", \"googlesyndication-cn.com\", \"*.googlesyndication-cn.com\", \"*.safeframe.googlesyndication-cn.com\", \"app-measurement-cn.com\", \"*.app-measurement-cn.com\", \"gvt1-cn.com\", \"*.gvt1-cn.com\", \"gvt2-cn.com\", \"*.gvt2-cn.com\", \"2mdn-cn.net\", \"*.2mdn-cn.net\", \"googleflights-cn.net\", \"*.googleflights-cn.net\", \"admob-cn.com\", \"*.admob-cn.com\", \"*.gemini.cloud.google.com\", \"googlesandbox-cn.com\", \"*.googlesandbox-cn.com\", \"*.safenup.googlesandbox-cn.com\", \"*.gstatic.com\", \"*.metric.gstatic.com\", \"*.gvt1.com\", \"*.gcpcdn.gvt1.com\", \"*.gvt2.com\", \"*.gcp.gvt2.com\", \"*.url.google.com\", \"*.youtube-nocookie.com\", \"*.ytimg.com\", \"ai.android\", \"android.com\", \"*.android.com\", \"*.flash.android.com\", \"g.cn\", \"*.g.cn\", \"g.co\", \"*.g.co\", \"goo.gl\", \"www.goo.gl\", \"google-analytics.com\", \"*.google-analytics.com\", \"google.com\", \"googlecommerce.com\", \"*.googlecommerce.com\", \"ggpht.cn\", \"*.ggpht.cn\", \"urchin.com\", \"*.urchin.com\", \"youtu.be\", \"youtube.com\", \"*.youtube.com\", \"music.youtube.com\", \"*.music.youtube.com\", \"youtubeeducation.com\", \"*.youtubeeducation.com\", \"youtubekids.com\", \"*.youtubekids.com\", \"yt.be\", \"*.yt.be\", \"android.clients.google.com\", \"*.android.google.cn\", \"*.chrome.google.cn\", \"*.developers.google.cn\", \"*.aistudio.google.com\"], \"issuer\": \"WE2\", \"subject\": \"*.google.com\", \"is_expired\": false, \"valid_from\": \"2026-02-23T18:19:56Z\", \"valid_until\": \"2026-05-18T18:19:55Z\", \"serial_number\": \"AA2302428EF4397E10BB2C32931CFC2E\", \"is_self_signed\": false, \"days_until_expiry\": 60}",
+      "connection": "{\"tls_version\": \"TLS 1.3\", \"cipher_suite\": \"TLS_AES_128_GCM_SHA256\"}",
+      "grade": "A",
+      "issues": "[]",
+      "created_at": "2026-03-20T04:42:44.045978Z"
+    }
+  ],
+  "tech_scan": [
+    {
+      "id": "ca3857e2-5307-43be-afb6-a72baeae9058",
+      "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+      "scan_job_id": "31bc49b0-a20e-4b15-bdc3-3abbc8bbbe11",
+      "domain": "google.com",
+      "technologies": "[{\"name\": \"gws\", \"category\": \"Web Server\", \"confidence\": 100}]",
+      "headers": "{\"p3p\": \"CP=\\\"This is not a P3P policy! See g.co/p3phelp for more info.\\\"\", \"date\": \"Thu, 19 Mar 2026 21:42:43 GMT\", \"server\": \"gws\", \"alt-svc\": \"h3=\\\":443\\\"; ma=2592000,h3-29=\\\":443\\\"; ma=2592000\", \"expires\": \"-1\", \"accept-ch\": \"Sec-CH-Prefers-Color-Scheme\", \"set-cookie\": \"__Secure-STRP=AEEP7gK3JexvliSSA16cWLgOmXULSVO4NYkGm-fh7UjLBZcVjpm5PhZIQn_MidCcHXoDgtl0ksiFvRdSQ7HgJa83b7PClO4M-In-; expires=Thu, 19-Mar-2026 21:47:43 GMT; path=/; domain=.google.com; Secure; SameSite=strict\", \"content-type\": \"text/html; charset=ISO-8859-1\", \"cache-control\": \"private, max-age=0\", \"x-frame-options\": \"SAMEORIGIN\", \"x-xss-protection\": \"0\", \"reporting-endpoints\": \"default=\\\"//www.google.com/httpservice/retry/jserror?ei=0228aY-xMKbb1e8PtPPS-Qo&cad=crash&error=Page%20Crash&jsel=1&bver=2405&dpf=fb_MLKOoTA3-4Y_Ow459mQC2MZd4gBh9cVaBFyGoei0\\\"\", \"content-security-policy-report-only\": \"object-src 'none';base-uri 'self';script-src 'nonce--1pLLObVQi6ZZ2KRK4K_Lg' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp\"}",
+      "meta_tags": "{}",
+      "created_at": "2026-03-20T04:42:44.509745Z"
+    }
+  ],
+  "whois": {
+    "id": "b77970a2-0e26-4dfe-b733-d0a66ed6bf58",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_job_id": "5e6de9c6-f6ba-44d6-8bf5-b8f2e112a93b",
+    "registrar": "MarkMonitor Inc.",
+    "created_date": "1997-09-15T04:00:00Z",
+    "expiry_date": "2028-09-14T04:00:00Z",
+    "name_servers": "NS1.GOOGLE.COM,NS2.GOOGLE.COM,NS3.GOOGLE.COM,NS4.GOOGLE.COM",
+    "status": "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,clientTransferProhibited https://icann.org/epp#clientTransferProhibited,clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,serverTransferProhibited https://icann.org/epp#serverTransferProhibited,serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited,//icann.org/epp",
+    "emails": "",
+    "raw_data": "   Domain Name: GOOGLE.COM\n   Registry Domain ID: 2138514_DOMAIN_COM-VRSN\n   Registrar WHOIS Server: whois.markmonitor.com\n   Registrar URL: http://www.markmonitor.com\n   Updated Date: 2019-09-09T15:39:04Z\n   Creation Date: 1997-09-15T04:00:00Z\n   Registry Expiry Date: 2028-09-14T04:00:00Z\n   Registrar: MarkMonitor Inc.\n   Registrar IANA ID: 292\n   Registrar Abuse Contact Email: abusecomplaints@markmonitor.com\n   Registrar Abuse Contact Phone: +1.2086851750\n   Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\n   Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\n   Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited\n   Domain Status: serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited\n   Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited\n   Domain Status: serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited\n   Name Server: NS1.GOOGLE.COM\n   Name Server: NS2.GOOGLE.COM\n   Name Server: NS3.GOOGLE.COM\n   Name Server: NS4.GOOGLE.COM\n   DNSSEC: unsigned\n   URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/\n>>> Last update of whois database: 2026-03-19T21:42:32Z <<<\n\nFor more information on Whois status codes, please visit https://icann.org/epp\n\nNOTICE: The expiration date displayed in this record is the date the\nregistrar's sponsorship of the domain name registration in the registry is\ncurrently set to expire. This date does not necessarily reflect the expiration\ndate of the domain name registrant's agreement with the sponsoring\nregistrar.  Users may consult the sponsoring registrar's Whois database to\nview the registrar's reported date of expiration for this registration.\n\nTERMS OF USE: You are not authorized to access or query our Whois\ndatabase through the use of electronic processes that are high-volume and\nautomated except as reasonably necessary to register domain names or\nmodify existing registrations; the Data in VeriSign Global Registry\nServices' (\"VeriSign\") Whois database is provided by VeriSign for\ninformation purposes only, and to assist persons in obtaining information\nabout or related to a domain name registration record. VeriSign does not\nguarantee its accuracy. By submitting a Whois query, you agree to abide\nby the following terms of use: You agree that you may use this Data only\nfor lawful purposes and that under no circumstances will you use this Data\nto: (1) allow, enable, or otherwise support the transmission of mass\nunsolicited, commercial advertising or solicitations via e-mail, telephone,\nor facsimile; or (2) enable high volume, automated, electronic processes\nthat apply to VeriSign (or its computer systems). The compilation,\nrepackaging, dissemination or other use of this Data is expressly\nprohibited without the prior written consent of VeriSign. You agree not to\nuse electronic processes that are automated and high-volume to access or\nquery the Whois database except as reasonably necessary to register\ndomain names or modify existing registrations. VeriSign reserves the right\nto restrict your access to the Whois database in its sole discretion to ensure\noperational stability.  VeriSign may restrict or terminate your access to the\nWhois database for failure to abide by these terms of use. VeriSign\nreserves the right to modify these terms at any time.\n\nThe Registry database contains ONLY .COM, .NET, .EDU domains and\nRegistrars.\n",
+    "created_at": "2026-03-20T04:42:43.859319Z"
+  }
+}
+
+============================================================
+  ALL Results for IP (aggregate)
+  Status: 200
+============================================================
+{
+  "ip_scan": [
+    {
+      "id": "fd45d393-2b41-446b-b283-428ba701cfdb",
+      "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+      "scan_job_id": "4eb5892f-3227-467b-85fa-3238d33371e8",
+      "ip_address": "127.0.0.1",
+      "geolocation": "{\"isp\": \"\", \"org\": \"\", \"city\": \"\", \"region\": \"\", \"country\": \"\", \"latitude\": 0, \"longitude\": 0, \"country_code\": \"\"}",
+      "asn": "{\"name\": \"\", \"number\": 0, \"description\": \"\"}",
+      "reverse_dns": "kubernetes.docker.internal",
+      "created_at": "2026-03-20T04:42:43.878363Z"
+    }
+  ],
+  "port_scan": [
+    {
+      "id": "66135072-2683-4847-9262-99050c3185d3",
+      "asset_id": "6ae449c5-c922-4f8a-9c84-45a54202f7a4",
+      "scan_job_id": "2621432d-2d1e-4bc8-b493-a870e0025a31",
+      "ip_address": "127.0.0.1",
+      "open_ports": "[{\"port\": 5432, \"state\": \"open\", \"service\": \"postgresql\", \"version\": \"\", \"protocol\": \"tcp\"}, {\"port\": 8080, \"state\": \"open\", \"service\": \"http-alt\", \"version\": \"\", \"protocol\": \"tcp\"}]",
+      "closed_ports": 14,
+      "total_scanned": 16,
+      "scan_duration_ms": 3,
+      "created_at": "2026-03-20T04:42:43.892469Z"
+    }
+  ]
+}
+
+============================================================
+  List all scans for Domain
+  Status: 200
+============================================================
+[
+  {
+    "id": "31bc49b0-a20e-4b15-bdc3-3abbc8bbbe11",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_type": "tech",
+    "status": "completed",
+    "started_at": "2026-03-20T04:42:44.060952Z",
+    "ended_at": "2026-03-20T04:42:44.517048Z",
+    "error": "",
+    "results": 1,
+    "created_at": "2026-03-20T04:42:44.060952Z"
+  },
+  {
+    "id": "11cb1d7f-ca52-4607-9f8e-09a42868a092",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_type": "ssl",
+    "status": "completed",
+    "started_at": "2026-03-20T04:42:43.907493Z",
+    "ended_at": "2026-03-20T04:42:44.050306Z",
+    "error": "",
+    "results": 1,
+    "created_at": "2026-03-20T04:42:43.907493Z"
+  },
+  {
+    "id": "5e6de9c6-f6ba-44d6-8bf5-b8f2e112a93b",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_type": "whois",
+    "status": "completed",
+    "started_at": "2026-03-20T04:42:43.03368Z",
+    "ended_at": "2026-03-20T04:42:43.864522Z",
+    "error": "",
+    "results": 1,
+    "created_at": "2026-03-20T04:42:43.03368Z"
+  },
+  {
+    "id": "bd2c78c8-f4f2-4cb2-bbd1-6d52458b7287",
+    "asset_id": "ba47f2bf-d007-4141-9009-0e279f2669fb",
+    "scan_type": "dns",
+    "status": "completed",
+    "started_at": "2026-03-20T04:42:42.859227Z",
+    "ended_at": "2026-03-20T04:42:43.02835Z",
+    "error": "",
+    "results": 19,
+    "created_at": "2026-03-20T04:42:42.859227Z"
+  }
+]
+
+
+Test complete!
+PS D:\workspace\cmc-intern-program\homeworks\Day3\sessionworks>

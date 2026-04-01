@@ -1,0 +1,116 @@
+version: "3.8"
+
+# Mini ASM - Session 5: Full Stack Deployment
+# PostgreSQL + Go backend + React frontend
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: mini-asm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mini_asm
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Auto-run migrations on first DB initialisation
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mini-asm-network
+
+  # Backend API (Go)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-asm-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: mini_asm
+      SERVER_PORT: 8080
+    ports:
+      - "${BACKEND_PORT:-8081}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mini-asm-network
+
+  # Frontend (React + Vite → nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mini-asm-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - mini-asm-network
+
+  # pgAdmin (Optional - Database GUI)
+  # Uncomment to enable web-based database management
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: mini-asm-pgadmin
+  #   restart: unless-stopped
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@miniasm.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_CONFIG_SERVER_MODE: "False"
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - mini-asm-network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  mini-asm-network:
+    driver: bridge
